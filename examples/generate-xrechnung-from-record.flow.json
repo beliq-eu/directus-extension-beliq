@@ -1,0 +1,33 @@
+{
+  "$note": "When an invoice record is created, generate an XRechnung XML invoice and save it to Directus Files. Assumes an 'invoices' collection whose records carry the invoice payload; the operation reads it from the trigger via {{ $trigger.payload.invoice }}. Load it with: DIRECTUS_URL=... DIRECTUS_TOKEN=... node examples/import.mjs generate-xrechnung-from-record.flow.json. beliq generates the compliant document; transmission (Peppol), archiving and reporting are separate. Add your key as the BELIQ_API_KEY env var (or set the operation's API Key).",
+  "flow": {
+    "name": "beliq - Record to XRechnung",
+    "icon": "receipt_long",
+    "color": "#6644FF",
+    "description": "Turn a new invoice record into a compliant XRechnung XML invoice.",
+    "status": "active",
+    "trigger": "event",
+    "accountability": "all",
+    "options": {
+      "type": "action",
+      "scope": ["items.create"],
+      "collections": ["invoices"]
+    }
+  },
+  "operations": [
+    {
+      "key": "beliq_generate",
+      "name": "beliq generate",
+      "type": "beliq",
+      "position_x": 19,
+      "position_y": 1,
+      "options": {
+        "operation": "generate",
+        "standard": "xrechnung",
+        "profile": "en16931",
+        "output": "xml",
+        "invoice": "{{ $trigger.payload.invoice }}"
+      }
+    }
+  ]
+}

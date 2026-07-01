@@ -1,0 +1,75 @@
+{
+  "name": "directus-extension-beliq",
+  "version": "0.1.0",
+  "description": "Directus Flow operation for beliq: generate, validate, parse, and convert EU-compliant e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS). Saves the result straight into Directus Files.",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-custom-extension",
+    "directus-extension-operation",
+    "beliq",
+    "e-invoice",
+    "einvoice",
+    "xrechnung",
+    "zugferd",
+    "factur-x",
+    "peppol",
+    "en16931",
+    "compliance"
+  ],
+  "license": "MIT",
+  "homepage": "https://beliq.eu",
+  "author": {
+    "name": "beliq",
+    "email": "hello@beliq.eu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beliq-eu/directus-extension-beliq.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beliq-eu/directus-extension-beliq/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "provenance": true
+  },
+  "directus:extension": {
+    "type": "operation",
+    "path": {
+      "app": "dist/app.js",
+      "api": "dist/api.js"
+    },
+    "source": {
+      "app": "src/app.ts",
+      "api": "src/api.ts"
+    },
+    "host": "^11.0.0"
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "prepublishOnly": "directus-extension build",
+    "dev": "directus-extension dev",
+    "link": "directus-extension link",
+    "validate": "directus-extension validate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run test/integration.test.ts",
+    "scrub:check": "grep -rn $'\\u2014' src README.md examples && echo 'em-dash found' && exit 1 || echo 'no em-dash'"
+  },
+  "dependencies": {
+    "@beliq/sdk": "^0.1.1"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "^17.1.4",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.0"
+  }
+}

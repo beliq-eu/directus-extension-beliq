@@ -1,0 +1,27 @@
+{
+  "$note": "Manual flow: validate a pasted or referenced e-invoice XML against beliq's authority-pinned rules and return the verdict into the flow data chain. Replace the sample XML with {{ $trigger.payload.xml }} or a value read from an earlier step. Load it with: DIRECTUS_URL=... DIRECTUS_TOKEN=... node examples/import.mjs validate-uploaded-file.flow.json. Add your key as the BELIQ_API_KEY env var (or set the operation's API Key).",
+  "flow": {
+    "name": "beliq - Validate invoice XML",
+    "icon": "fact_check",
+    "color": "#6644FF",
+    "description": "Validate an e-invoice document and return the compliance verdict.",
+    "status": "active",
+    "trigger": "manual",
+    "accountability": "all",
+    "options": { "collections": [] }
+  },
+  "operations": [
+    {
+      "key": "beliq_validate",
+      "name": "beliq validate",
+      "type": "beliq",
+      "position_x": 19,
+      "position_y": 1,
+      "options": {
+        "operation": "validate",
+        "validateFormat": "auto",
+        "validateDocument": "{{ $trigger.payload.xml }}"
+      }
+    }
+  ]
+}
