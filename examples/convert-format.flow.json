@@ -1,0 +1,29 @@
+{
+  "$note": "Manual flow: convert an e-invoice document from one format to another (here CII/UBL input to a Factur-X hybrid PDF) and save the result to Directus Files. Replace the sample XML with {{ $trigger.payload.xml }} or a value from an earlier step. Load it with: DIRECTUS_URL=... DIRECTUS_TOKEN=... node examples/import.mjs convert-format.flow.json. Add your key as the BELIQ_API_KEY env var (or set the operation's API Key).",
+  "flow": {
+    "name": "beliq - Convert invoice format",
+    "icon": "sync_alt",
+    "color": "#6644FF",
+    "description": "Convert an e-invoice to another format and save it to Directus Files.",
+    "status": "active",
+    "trigger": "manual",
+    "accountability": "all",
+    "options": { "collections": [] }
+  },
+  "operations": [
+    {
+      "key": "beliq_convert",
+      "name": "beliq convert",
+      "type": "beliq",
+      "position_x": 19,
+      "position_y": 1,
+      "options": {
+        "operation": "convert",
+        "targetFormat": "facturx",
+        "convertProfile": "en16931",
+        "convertDocument": "{{ $trigger.payload.xml }}",
+        "deliveryMode": "directusFile"
+      }
+    }
+  ]
+}

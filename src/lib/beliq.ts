@@ -1,0 +1,37 @@
+import { Beliq, BeliqApiError } from '@beliq/sdk';
+
+/** Build a configured SDK client from a resolved API key. */
+export function createClient(apiKey: string): Beliq {
+  return new Beliq({ apiKey });
+}
+
+/**
+ * Turn an SDK error into a flat Error with a readable message. A BeliqApiError
+ * carries the typed `{ code, message }` from beliq's error envelope; anything
+ * else is surfaced verbatim.
+ */
+export function mapError(error: unknown): Error {
+  if (error instanceof BeliqApiError) {
+    return new Error(error.code ? `${error.message} (${error.code})` : error.message);
+  }
+  return error instanceof Error ? error : new Error(String(error));
+}
+
+/** Coerce an option value into a non-empty plain object, or undefined. */
+export function asJsonObject(value: unknown): Record<string, unknown> | undefined {
+  let candidate = value;
+  if (typeof candidate === 'string') {
+    const trimmed = candidate.trim();
+    if (trimmed === '') return undefined;
+    try {
+      candidate = JSON.parse(trimmed);
+    } catch {
+      return undefined;
+    }
+  }
+  if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) {
+    const obj = candidate as Record<string, unknown>;
+    return Object.keys(obj).length > 0 ? obj : undefined;
+  }
+  return undefined;
+}
