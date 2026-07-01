@@ -106,13 +106,17 @@ POSTs a chosen example through the Flows API and wires the entry point.
 
 ## Out of scope this pass (follow-ups, need external coordination)
 
-- todo: Publish. The **first** publish is operator-gated and must be a local
-  bootstrap `npm publish` under the npm `beliq` account (owns the unscoped name),
-  because a Trusted Publisher can only be attached to a package that already
-  exists. After v0.1.0 lands, configure `beliq-eu/directus-extension-beliq` as a
-  Trusted Publisher (workflow `release.yml`); every tag from then on publishes
-  via OIDC with provenance.
-- todo: Push to `github.com/beliq-eu/directus-extension-beliq` (public).
+- done: Bootstrap publish. `directus-extension-beliq@0.1.0` is live on npm
+  (public, tag `latest`), published locally under the npm `beliq` account with
+  `--no-provenance` (a local publish has no CI OIDC token, so provenance is off
+  for this one release only).
+- done: Repo `github.com/beliq-eu/directus-extension-beliq` (public) exists.
+- todo (operator, on npmjs.com): attach `beliq-eu/directus-extension-beliq` as a
+  Trusted Publisher for the package, so tagged releases publish via OIDC with
+  provenance through `release.yml`. Needs an npm login; cannot be done with a
+  publish token.
+- todo: Real-instance check - load `dist/` into a throwaway Directus 11, run each
+  operation against a live key (needs the beliq API live).
 - todo: Docs guide on docs.beliq.eu (install + 4 use cases + the `import.mjs`
   loader).
 
