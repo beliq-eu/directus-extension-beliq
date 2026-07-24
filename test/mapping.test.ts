@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Beliq } from '@beliq/sdk';
+import { resolveGenerateTarget, STANDARD_CHOICES } from '../src/lib/options';
 
 // These tests assert that each beliq operation, driven through the SDK exactly
 // as src/api.ts drives it, maps its options onto the right wire request:
@@ -199,5 +200,29 @@ describe('beliq operation mapping', () => {
     const { query } = parseUrl(calls[0].url);
     expect(query.targetFormat).toBe('ubl');
     expect(query.targetProfile).toBeUndefined();
+  });
+});
+
+describe('generate target resolution', () => {
+  it('lists NLCIUS as a generate target beside the plain standards', () => {
+    expect(STANDARD_CHOICES.map((c) => c.value)).toEqual([
+      'xrechnung',
+      'zugferd',
+      'facturx',
+      'peppol-bis',
+      'nlcius',
+    ]);
+  });
+
+  it('resolves NLCIUS to peppol-bis + the netherlands-nlcius profile (XML)', () => {
+    expect(resolveGenerateTarget('nlcius')).toEqual({
+      standard: 'peppol-bis',
+      profile: 'netherlands-nlcius',
+      output: 'xml',
+    });
+  });
+
+  it('resolves a plain standard to itself with no forced profile', () => {
+    expect(resolveGenerateTarget('xrechnung')).toEqual({ standard: 'xrechnung' });
   });
 });

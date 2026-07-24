@@ -5,11 +5,11 @@ import type {
   GenerateProfile,
   Invoice,
   ParseFormat,
-  Standard,
   ValidateFormat,
 } from '@beliq/sdk';
 import { asJsonObject, createClient, mapError } from './lib/beliq.js';
 import { saveToDirectusFile } from './lib/deliver.js';
+import { resolveGenerateTarget } from './lib/options.js';
 
 type Options = Record<string, any>;
 
@@ -56,15 +56,18 @@ export default defineOperationApi<Options>({
       }
 
       if (operation === 'generate') {
+        const target = resolveGenerateTarget(options.standard as string);
+        const output = target.output ?? ((options.output as 'xml' | 'pdf') || 'xml');
         const result = await beliq.generate({
-          standard: options.standard as Standard,
+          standard: target.standard,
           invoice: (asJsonObject(options.invoice) ?? {}) as Invoice,
-          output: (options.output as 'xml' | 'pdf') || 'xml',
-          profile: (options.profile as GenerateProfile) || undefined,
+          output,
+          profile:
+            (target.profile as GenerateProfile) || (options.profile as GenerateProfile) || undefined,
           pdfTemplateId: (options.pdfTemplateId as string) || undefined,
         });
 
-        if ((options.output as string) !== 'pdf') {
+        if (output !== 'pdf') {
           return {
             xml: result.xml,
             contentType: result.contentType,
