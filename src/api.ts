@@ -69,6 +69,12 @@ export default defineOperationApi<Options>({
             | GenerateProfile
             | undefined,
           pdfTemplateId: (options.pdfTemplateId as string) || undefined,
+          // XRechnung and Peppol BIS have no hybrid PDF, and the API refuses
+          // PDF for them unless the request names a visual to render. Factur-X
+          // and ZUGFeRD render theirs either way, so this is inert for them. A
+          // stored template, when set, is the visual instead.
+          template:
+            output === 'pdf' && !options.pdfTemplateId ? 'standard' : undefined,
         });
 
         if (output !== 'pdf') {

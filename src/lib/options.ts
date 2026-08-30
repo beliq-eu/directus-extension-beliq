@@ -90,9 +90,12 @@ export const VALIDATE_FORMAT_CHOICES = choices(LIVE_VALIDATE_FORMATS);
 export const PARSE_FORMAT_CHOICES = choices(LIVE_PARSE_FORMATS);
 export const CONVERT_TARGET_CHOICES = choices(LIVE_CONVERT_TARGET_FORMATS);
 
+// "PDF" without a qualifier: whether it is a hybrid PDF/A-3 or a visualization
+// with no embedded XML depends on the chosen standard, which a static label
+// cannot say. The Output field note carries that.
 export const OUTPUT_CHOICES: Choice[] = [
   { text: 'XML', value: 'xml' },
-  { text: 'PDF (Hybrid)', value: 'pdf' },
+  { text: 'PDF', value: 'pdf' },
 ];
 
 export const OPERATION_CHOICES: Choice[] = [

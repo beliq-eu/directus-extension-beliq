@@ -12,18 +12,20 @@ interface Recorded {
   body: unknown;
 }
 
-function recordGenerate() {
+function recordGenerate(response?: { bytes: Uint8Array; contentType: string }) {
   const calls: Recorded[] = [];
   const original = globalThis.fetch;
+  const body = response?.bytes ?? new TextEncoder().encode('<Invoice/>');
+  const contentType = response?.contentType ?? 'application/xml';
 
   globalThis.fetch = (async (input: unknown, init?: RequestInit) => {
     calls.push({
       url: String(input),
       body: typeof init?.body === 'string' ? JSON.parse(init.body) : undefined,
     });
-    return new Response(new TextEncoder().encode('<Invoice/>'), {
+    return new Response(body, {
       status: 200,
-      headers: { 'content-type': 'application/xml' },
+      headers: { 'content-type': contentType },
     });
   }) as typeof fetch;
 
@@ -37,6 +39,33 @@ async function generate(options: Record<string, unknown>) {
   try {
     await api.handler(
       { operation: 'generate', apiKey: 'test-key', output: 'xml', invoice: INVOICE, ...options },
+      { env: {} } as never,
+    );
+  } finally {
+    restore();
+  }
+  return calls[0]?.body as Record<string, unknown>;
+}
+
+/**
+ * Drive the handler down its PDF path. `deliveryMode: 'base64'` keeps the
+ * result out of the Directus Files service, which needs a running Directus.
+ */
+async function generatePdf(options: Record<string, unknown>) {
+  const { calls, restore } = recordGenerate({
+    bytes: new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31]), // %PDF-1
+    contentType: 'application/pdf',
+  });
+  try {
+    await api.handler(
+      {
+        operation: 'generate',
+        apiKey: 'test-key',
+        output: 'pdf',
+        deliveryMode: 'base64',
+        invoice: INVOICE,
+        ...options,
+      },
       { env: {} } as never,
     );
   } finally {
@@ -72,6 +101,34 @@ describe('generate handler', () => {
   it('lets a preset pin the profile the standard needs', async () => {
     const body = await generate({ standard: 'nlcius' });
     expect(body).toMatchObject({ standard: 'peppol-bis', profile: 'netherlands-nlcius' });
+  });
+
+  // XRechnung and Peppol BIS have no hybrid PDF. The API refuses PDF output for
+  // them unless the request names a visual to render, so without `template` the
+  // Output=PDF choice is a 400 no saved option value avoids.
+  it('asks for the built-in visual when PDF is chosen and no stored template is given', async () => {
+    const body = await generatePdf({ standard: 'xrechnung' });
+    expect(body.output).toBe('pdf');
+    expect(body.template).toBe('standard');
+  });
+
+  // Factur-X and ZUGFeRD render their page either way, so the same field goes
+  // out for them too rather than being gated on a standard list the extension
+  // would then have to keep in step with the API.
+  it('asks for the built-in visual on the hybrid standards as well', async () => {
+    const body = await generatePdf({ standard: 'zugferd' });
+    expect(body.template).toBe('standard');
+  });
+
+  it('prefers a stored template over the built-in visual', async () => {
+    const body = await generatePdf({ standard: 'xrechnung', pdfTemplateId: 'k3d-9mp' });
+    expect(body.pdfTemplateId).toBe('k3d-9mp');
+    expect(body).not.toHaveProperty('template');
+  });
+
+  it('sends no visual on XML output, where there is nothing to render', async () => {
+    const body = await generate({ standard: 'xrechnung' });
+    expect(body).not.toHaveProperty('template');
   });
 
   it('sends no profile when none was chosen', async () => {
