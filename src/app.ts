@@ -138,7 +138,7 @@ export default defineOperationApp({
         width: 'half',
         interface: 'select-dropdown',
         options: { choices: OUTPUT_CHOICES },
-        note: 'XML returns the raw invoice; PDF returns a hybrid PDF/A-3.',
+        note: 'XML returns the raw invoice. PDF returns a hybrid PDF/A-3 with the XML embedded on ZUGFeRD and Factur-X; XRechnung and Peppol BIS have no hybrid form, so they return a visualization with no XML inside it and their legal document stays the XML.',
         ...onlyWhen({ operation: { _eq: 'generate' } }),
       },
       schema: { default_value: 'xml' },
@@ -163,7 +163,7 @@ export default defineOperationApp({
       meta: {
         width: 'half',
         interface: 'input',
-        note: 'Optional. Render the PDF from a saved beliq dashboard template.',
+        note: 'Optional. Render the PDF from a saved beliq dashboard template instead of the built-in layout. Needs an authenticated organisation and a template that already exists.',
         ...onlyWhen({ operation: { _eq: 'generate' } }),
       },
     },
