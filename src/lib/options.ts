@@ -5,6 +5,8 @@ import {
   LIVE_PARSE_FORMATS,
   LIVE_PROFILES,
   LIVE_VALIDATE_FORMATS,
+  isProfileAllowedForStandard,
+  profilesForStandard,
   type Standard,
 } from '@beliq/sdk';
 
@@ -59,6 +61,31 @@ export function resolveGenerateTarget(value: string): GenerateTarget {
 }
 
 export const PROFILE_CHOICES = choices(LIVE_PROFILES);
+
+/**
+ * The profiles a standard accepts. `profile` is pinned per standard, and the
+ * engine answers a pair outside its table with 422 PROFILE_STANDARD_MISMATCH,
+ * so one flat list would offer values that cannot succeed.
+ */
+export function profileChoicesFor(value: string): Choice[] {
+  return choices(profilesForStandard(resolveGenerateTarget(value).standard));
+}
+
+/**
+ * Standard-dropdown values that leave the caller a profile to pick: more than
+ * one legal value, and not a preset that already pins one.
+ */
+export const STANDARDS_WITH_PROFILE_CHOICE: string[] = STANDARD_CHOICES.map((c) => c.value).filter(
+  (value) => !resolveGenerateTarget(value).profile && profileChoicesFor(value).length > 1,
+);
+
+/** Drop a profile the resolved standard does not accept. */
+export function usableProfile(value: string, profile: string | undefined): string | undefined {
+  if (!profile) return undefined;
+  return isProfileAllowedForStandard(resolveGenerateTarget(value).standard, profile)
+    ? profile
+    : undefined;
+}
 export const VALIDATE_FORMAT_CHOICES = choices(LIVE_VALIDATE_FORMATS);
 export const PARSE_FORMAT_CHOICES = choices(LIVE_PARSE_FORMATS);
 export const CONVERT_TARGET_CHOICES = choices(LIVE_CONVERT_TARGET_FORMATS);

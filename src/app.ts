@@ -7,7 +7,9 @@ import {
   PARSE_FORMAT_CHOICES,
   PROFILE_CHOICES,
   STANDARD_CHOICES,
+  STANDARDS_WITH_PROFILE_CHOICE,
   VALIDATE_FORMAT_CHOICES,
+  profileChoicesFor,
 } from './lib/options.js';
 
 type Rule = Record<string, unknown>;
@@ -20,35 +22,48 @@ function onlyWhen(rule: Rule) {
   };
 }
 
+// The prefilled example, and the shape a first run actually succeeds with: it
+// clears the request schema, and clears XRechnung's own rules, which want a
+// seller contact (BR-DE-2) and an electronic address for both parties
+// (PEPPOL-EN16931-R010/R020). Verified against POST /v1/generate.
 const EXAMPLE_INVOICE = {
-  number: 'INV-001',
-  issueDate: '2026-01-31',
-  dueDate: '2026-03-02',
+  number: 'INV-2026-001',
+  issueDate: '2026-01-15',
+  dueDate: '2026-02-14',
   currencyCode: 'EUR',
+  buyerReference: '991-12345-67',
   seller: {
-    name: 'Your Company GmbH',
-    address: { line1: 'Main St 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
-    taxId: 'DE123456789',
+    name: 'Seller GmbH',
+    vatId: 'DE123456789',
+    contactName: 'A Person',
+    email: 'billing@seller.example',
+    phone: '+49 30 123456',
+    address: { street: 'Hauptstrasse 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
+    peppol: { schemeId: '0088', id: '4030000000001' },
   },
   buyer: {
-    name: 'Customer SARL',
-    address: { line1: 'Rue 2', city: 'Paris', postalCode: '75001', countryCode: 'FR' },
+    name: 'Buyer SARL',
+    vatId: 'FR12345678901',
+    email: 'ap@buyer.example',
+    address: { street: 'Rue de la Paix 2', city: 'Paris', postalCode: '75002', countryCode: 'FR' },
+    peppol: { schemeId: '0088', id: '4030000000002' },
   },
   lines: [
     {
-      description: 'Widget',
-      quantity: 2,
-      unitPrice: 10,
-      lineTotal: 20,
+      description: 'Consulting services',
+      quantity: 10,
+      unitCode: 'HUR',
+      unitPrice: 100,
+      lineTotal: 1000,
       vatRate: 19,
       vatCategoryCode: 'S',
     },
   ],
-  taxSummary: [{ categoryCode: 'S', rate: 19, taxableAmount: 20, taxAmount: 3.8 }],
-  paymentTerms: 'Net 30',
-  totalNetAmount: 20,
-  totalTaxAmount: 3.8,
-  totalGrossAmount: 23.8,
+  taxSummary: [{ vatCategoryCode: 'S', vatRate: 19, taxableAmount: 1000, taxAmount: 190 }],
+  paymentMeans: { typeCode: '58', iban: 'DE89370400440532013000' },
+  totalNetAmount: 1000,
+  totalTaxAmount: 190,
+  totalGrossAmount: 1190,
 };
 
 export default defineOperationApp({
@@ -96,11 +111,24 @@ export default defineOperationApp({
       meta: {
         width: 'half',
         interface: 'select-dropdown',
-        options: { choices: PROFILE_CHOICES },
-        note: 'EN 16931 data granularity profile (applies to Factur-X / ZUGFeRD).',
-        ...onlyWhen({ operation: { _eq: 'generate' } }),
+        options: { choices: [] },
+        note: 'Data granularity profile. Shown only for the standards that leave it open; the rest pin their own.',
+        // Each standard accepts its own profile set, so the choices follow the
+        // Standard field rather than being one flat list: an unfiltered list
+        // offers values the engine answers with 422 PROFILE_STANDARD_MISMATCH.
+        // Standards with a single legal profile, and the presets that already
+        // pin one, leave the field hidden.
+        hidden: true,
+        conditions: STANDARDS_WITH_PROFILE_CHOICE.map((standard) => ({
+          name: `show-${standard}`,
+          rule: { _and: [{ operation: { _eq: 'generate' } }, { standard: { _eq: standard } }] },
+          hidden: false,
+          options: { choices: profileChoicesFor(standard) },
+        })),
       },
-      schema: { default_value: 'en16931' },
+      // No default: a stored profile the standard does not accept is a 422 the
+      // caller never chose. Unset lets the engine apply the standard's own.
+      schema: {},
     },
     {
       field: 'output',

@@ -1,6 +1,6 @@
 {
   "name": "directus-extension-beliq",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Directus Flow operation for beliq: generate, validate, parse, and convert EU-compliant e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS). Saves the result straight into Directus Files.",
   "keywords": [
     "directus",
@@ -64,7 +64,7 @@
     "scrub:check": "grep -rn $'\\u2014' src README.md examples && echo 'em-dash found' && exit 1 || echo 'no em-dash'"
   },
   "dependencies": {
-    "@beliq/sdk": "^0.2.0"
+    "@beliq/sdk": "^0.3.0"
   },
   "overrides": {
     "joi": "^18.2.1",
