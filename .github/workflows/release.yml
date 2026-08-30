@@ -40,7 +40,9 @@ jobs:
       - name: Upgrade npm
         run: npm install -g npm@latest
 
-      # No committed lockfile: @beliq/sdk is resolved fresh from the registry.
+      # `npm install`, not `npm ci`: the release resolves @beliq/sdk fresh from
+      # the registry so a tagged build picks up the current SDK patch line. CI
+      # installs from the committed lockfile instead, and is the reproducible one.
       - name: Install dependencies
         run: npm install
 
