@@ -22,35 +22,48 @@ function onlyWhen(rule: Rule) {
   };
 }
 
+// The prefilled example, and the shape a first run actually succeeds with: it
+// clears the request schema, and clears XRechnung's own rules, which want a
+// seller contact (BR-DE-2) and an electronic address for both parties
+// (PEPPOL-EN16931-R010/R020). Verified against POST /v1/generate.
 const EXAMPLE_INVOICE = {
-  number: 'INV-001',
-  issueDate: '2026-01-31',
-  dueDate: '2026-03-02',
+  number: 'INV-2026-001',
+  issueDate: '2026-01-15',
+  dueDate: '2026-02-14',
   currencyCode: 'EUR',
+  buyerReference: '991-12345-67',
   seller: {
-    name: 'Your Company GmbH',
-    address: { line1: 'Main St 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
-    taxId: 'DE123456789',
+    name: 'Seller GmbH',
+    vatId: 'DE123456789',
+    contactName: 'A Person',
+    email: 'billing@seller.example',
+    phone: '+49 30 123456',
+    address: { street: 'Hauptstrasse 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
+    peppol: { schemeId: '0088', id: '4030000000001' },
   },
   buyer: {
-    name: 'Customer SARL',
-    address: { line1: 'Rue 2', city: 'Paris', postalCode: '75001', countryCode: 'FR' },
+    name: 'Buyer SARL',
+    vatId: 'FR12345678901',
+    email: 'ap@buyer.example',
+    address: { street: 'Rue de la Paix 2', city: 'Paris', postalCode: '75002', countryCode: 'FR' },
+    peppol: { schemeId: '0088', id: '4030000000002' },
   },
   lines: [
     {
-      description: 'Widget',
-      quantity: 2,
-      unitPrice: 10,
-      lineTotal: 20,
+      description: 'Consulting services',
+      quantity: 10,
+      unitCode: 'HUR',
+      unitPrice: 100,
+      lineTotal: 1000,
       vatRate: 19,
       vatCategoryCode: 'S',
     },
   ],
-  taxSummary: [{ categoryCode: 'S', rate: 19, taxableAmount: 20, taxAmount: 3.8 }],
-  paymentTerms: 'Net 30',
-  totalNetAmount: 20,
-  totalTaxAmount: 3.8,
-  totalGrossAmount: 23.8,
+  taxSummary: [{ vatCategoryCode: 'S', vatRate: 19, taxableAmount: 1000, taxAmount: 190 }],
+  paymentMeans: { typeCode: '58', iban: 'DE89370400440532013000' },
+  totalNetAmount: 1000,
+  totalTaxAmount: 190,
+  totalGrossAmount: 1190,
 };
 
 export default defineOperationApp({
