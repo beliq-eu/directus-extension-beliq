@@ -9,7 +9,7 @@ import type {
 } from '@beliq/sdk';
 import { asJsonObject, createClient, mapError } from './lib/beliq.js';
 import { saveToDirectusFile } from './lib/deliver.js';
-import { resolveGenerateTarget } from './lib/options.js';
+import { resolveGenerateTarget, usableProfile } from './lib/options.js';
 
 type Options = Record<string, any>;
 
@@ -62,8 +62,12 @@ export default defineOperationApi<Options>({
           standard: target.standard,
           invoice: (asJsonObject(options.invoice) ?? {}) as Invoice,
           output,
-          profile:
-            (target.profile as GenerateProfile) || (options.profile as GenerateProfile) || undefined,
+          // A profile the standard does not accept is a 422; an operation saved
+          // before the field was filtered can still carry one.
+          profile: (target.profile ??
+            usableProfile(options.standard as string, options.profile as string)) as
+            | GenerateProfile
+            | undefined,
           pdfTemplateId: (options.pdfTemplateId as string) || undefined,
         });
 

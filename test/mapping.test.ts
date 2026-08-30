@@ -79,7 +79,6 @@ describe('beliq operation mapping', () => {
       standard: 'xrechnung',
       invoice: { number: 'INV-1' } as any,
       output: 'xml',
-      profile: 'en16931',
     });
 
     expect(calls).toHaveLength(1);
@@ -89,11 +88,12 @@ describe('beliq operation mapping', () => {
     expect(path).toBe('/v1/generate');
     expect(call.headers['Content-Type']).toBe('application/json');
     expect(call.headers['X-API-Key']).toBe(API_KEY);
+    // No `profile`: XRechnung pins its own, and sending one the standard does
+    // not accept is a 422 PROFILE_STANDARD_MISMATCH.
     expect(JSON.parse(call.body!)).toEqual({
       standard: 'xrechnung',
       output: 'xml',
       invoice: { number: 'INV-1' },
-      profile: 'en16931',
     });
     expect(result.contentType).toBe('application/xml');
     expect(result.xml).toBe('<Invoice/>');
