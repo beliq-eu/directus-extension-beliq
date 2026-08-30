@@ -1,4 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Plain preset, not the :automerge variant. Automerge is only safe where a PR check can refuse the update, so a repo opts in by extending local>beliq-eu/.github:automerge once its CI gates pull_request.",
   "extends": ["local>beliq-eu/.github"]
 }
