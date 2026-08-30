@@ -39,14 +39,14 @@ const EXAMPLE_INVOICE = {
     email: 'billing@seller.example',
     phone: '+49 30 123456',
     address: { street: 'Hauptstrasse 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
-    peppol: { schemeId: '0088', id: '4030000000001' },
+    peppol: { schemeId: '0088', id: '4030000000003' },
   },
   buyer: {
     name: 'Buyer SARL',
     vatId: 'FR12345678901',
     email: 'ap@buyer.example',
     address: { street: 'Rue de la Paix 2', city: 'Paris', postalCode: '75002', countryCode: 'FR' },
-    peppol: { schemeId: '0088', id: '4030000000002' },
+    peppol: { schemeId: '0088', id: '4030000000027' },
   },
   lines: [
     {
