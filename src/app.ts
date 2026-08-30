@@ -7,7 +7,9 @@ import {
   PARSE_FORMAT_CHOICES,
   PROFILE_CHOICES,
   STANDARD_CHOICES,
+  STANDARDS_WITH_PROFILE_CHOICE,
   VALIDATE_FORMAT_CHOICES,
+  profileChoicesFor,
 } from './lib/options.js';
 
 type Rule = Record<string, unknown>;
@@ -96,11 +98,24 @@ export default defineOperationApp({
       meta: {
         width: 'half',
         interface: 'select-dropdown',
-        options: { choices: PROFILE_CHOICES },
-        note: 'EN 16931 data granularity profile (applies to Factur-X / ZUGFeRD).',
-        ...onlyWhen({ operation: { _eq: 'generate' } }),
+        options: { choices: [] },
+        note: 'Data granularity profile. Shown only for the standards that leave it open; the rest pin their own.',
+        // Each standard accepts its own profile set, so the choices follow the
+        // Standard field rather than being one flat list: an unfiltered list
+        // offers values the engine answers with 422 PROFILE_STANDARD_MISMATCH.
+        // Standards with a single legal profile, and the presets that already
+        // pin one, leave the field hidden.
+        hidden: true,
+        conditions: STANDARDS_WITH_PROFILE_CHOICE.map((standard) => ({
+          name: `show-${standard}`,
+          rule: { _and: [{ operation: { _eq: 'generate' } }, { standard: { _eq: standard } }] },
+          hidden: false,
+          options: { choices: profileChoicesFor(standard) },
+        })),
       },
-      schema: { default_value: 'en16931' },
+      // No default: a stored profile the standard does not accept is a 422 the
+      // caller never chose. Unset lets the engine apply the standard's own.
+      schema: {},
     },
     {
       field: 'output',
