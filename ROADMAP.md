@@ -1,5 +1,7 @@
 # Directus beliq connector - implementation roadmap
 
+`status: live, next: the real-instance check, load dist/ into a throwaway Directus 11 and run each operation against a live key`
+
 Living roadmap for the Directus connector, a beliq clone of the sibling
 `../../polydoc/tools/directus-extension-polydoc`, backed by the published
 `@beliq/sdk` (not a vendored request builder).
@@ -31,7 +33,7 @@ integration. Trade-off accepted: no one-click install on Directus Cloud.
 ### Backed by @beliq/sdk
 
 Unlike the polydoc extension (which vendors a `buildRequestBody` port), this
-extension calls the published `@beliq/sdk` (`^0.1.1`) directly. The SDK owns the
+extension calls the published `@beliq/sdk` (`^0.3.0`) directly. The SDK owns the
 wire format (paths, query, body, headers, envelope parsing), so the extension is
 thin: resolve the key, dispatch by operation, deliver bytes. Option value-spaces
 come from the SDK's `LIVE_*` lists so the UI never drifts from the API surface.
@@ -96,13 +98,15 @@ POSTs a chosen example through the Flows API and wires the entry point.
   groups, conditional via `meta.conditions`, delivery + folder, API key.
 - done: `src/api.ts` (`defineOperationApi`): resolve key -> `new Beliq` ->
   dispatch by operation -> deliver bytes (Directus File / base64) -> `mapError`.
-- done: Unit tests `test/mapping.test.ts` (recording fetch asserts each
-  operation's URL/method/query/body/headers), green.
-- done: Live smoke `test/integration.test.ts` gated on `BELIQ_API_KEY`.
+- done: Unit tests, green: `test/mapping.test.ts` (recording fetch asserts each
+  operation's URL/method/query/body/headers), `test/handler.test.ts`, and
+  `test/sample-invoice.test.ts`. 23 pass offline.
+- done: Live smoke `test/integration.test.ts` gated on `BELIQ_API_KEY` (5 tests).
 - done: Per-angle example flows + `examples/import.mjs` loader, README.
 - done: `npm run build` + `directus-extension validate` + em-dash sweep.
-- todo: Real-instance check - load `dist/` into a throwaway Directus 11, run
-  each operation against a live key.
+
+The real-instance check is the one open item and is tracked in the follow-ups
+below, since it needs an instance this pass does not stand up.
 
 ## Out of scope this pass (follow-ups, need external coordination)
 
@@ -113,12 +117,14 @@ POSTs a chosen example through the Flows API and wires the entry point.
 - done: Trusted Publisher attached on npmjs.com (`beliq-eu/directus-extension-beliq`,
   workflow `release.yml`). Verified end to end: tag `v0.1.1` published
   `directus-extension-beliq@0.1.1` through the OIDC workflow with a SLSA
-  provenance attestation, no `NPM_TOKEN`. Every future release cuts a `v*.*.*`
-  tag and flows through `release.yml`.
-- todo: Real-instance check - load `dist/` into a throwaway Directus 11, run each
-  operation against a live key (needs the beliq API live).
-- todo: Docs guide on docs.beliq.eu (install + 4 use cases + the `import.mjs`
-  loader).
+  provenance attestation, no `NPM_TOKEN`. Every release cuts a `v*.*.*` tag and
+  flows through `release.yml`; the published version is `0.2.3`.
+- done: Docs guide, live at https://docs.beliq.eu/integrations/directus/. Covers
+  install (Marketplace and npm), use in a Flow, the four operations, and the
+  `examples/import.mjs` loader.
+- todo: Real-instance check - load `dist/` into a throwaway Directus 11 and run
+  each operation against a live key. `api.beliq.eu` answers, so the key is the
+  only input still to arrange.
 
 ## Notes / known unknowns
 
