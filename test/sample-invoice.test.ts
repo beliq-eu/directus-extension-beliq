@@ -2,12 +2,11 @@ import { describe, expect, it } from 'vitest';
 import app from '../src/app';
 
 // EXAMPLE_INVOICE is the default_value Directus stores for a fresh operation, so
-// it is what a user's first run sends. On XRechnung it succeeded even with a
-// malformed Peppol id, because the CII builder ignores `party.peppol` entirely
-// (bq-engine#267) and addresses the party by email. On Peppol BIS the UBL
-// builder does use it, and PEPPOL-COMMON-R040 rejects a GLN whose GS1 check
-// digit is wrong: fatal, four times, before the invoice is even looked at. So
-// the sample needs a check the standard itself applies.
+// it is what a user's first run sends. On Peppol BIS a GLN whose GS1 check
+// digit is wrong is fatal four times over before the invoice is even looked at
+// (PEPPOL-COMMON-R040). Every other standard emits the id and says nothing:
+// KoSIT's XRechnung packs carry no R040, so a malformed id ships. So the
+// sample needs a check the standard itself applies.
 
 /**
  * PEPPOL-COMMON-R040's own rule, transcribed from
