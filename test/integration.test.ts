@@ -16,10 +16,14 @@ const INVOICE = {
     name: 'Your Company GmbH',
     address: { line1: 'Main St 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
     taxId: 'DE123456789',
+    // BT-34 / BT-49. XRechnung rejects a party it cannot address (400), and
+    // `taxId` is not one of the rungs it reads — only `vatId` is.
+    email: 'billing@yourcompany.example',
   },
   buyer: {
     name: 'Customer SARL',
     address: { line1: 'Rue 2', city: 'Paris', postalCode: '75001', countryCode: 'FR' },
+    email: 'ap@customer.example',
   },
   lines: [
     { description: 'Widget', quantity: 2, unitPrice: 10, lineTotal: 20, vatRate: 19, vatCategoryCode: 'S' },
