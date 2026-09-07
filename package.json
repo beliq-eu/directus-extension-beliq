@@ -58,7 +58,7 @@
     "dev": "directus-extension dev",
     "link": "directus-extension link",
     "validate": "directus-extension validate",
-    "test": "vitest run",
+    "test": "vitest run --exclude test/integration.test.ts",
     "test:watch": "vitest",
     "test:integration": "vitest run test/integration.test.ts",
     "scrub:check": "grep -rn $'\\u2014' src README.md examples && echo 'em-dash found' && exit 1 || echo 'no em-dash'"

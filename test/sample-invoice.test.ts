@@ -51,3 +51,42 @@ describe('sample invoice', () => {
     expect(invoice.seller.peppol.id).not.toBe(invoice.buyer.peppol.id);
   });
 });
+
+describe('the fields the XRechnung CIUS requires', () => {
+  // `verify` defaults to true, so an invoice that satisfies plain EN 16931 and
+  // nothing more comes back 422 on the user's first run. Each assertion names
+  // the rule the field answers.
+  const invoice = sampleInvoice();
+
+  it('carries the seller contact group BG-6 (BR-DE-2)', () => {
+    expect(invoice.seller.contactName).toBeTruthy();
+    expect(invoice.seller.phone).toBeTruthy();
+  });
+
+  it('carries payment instructions BG-16 (BR-DE-1)', () => {
+    expect(invoice.paymentMeans?.typeCode).toBeTruthy();
+  });
+
+  it('carries a VAT breakdown BG-23 matching every line (BR-CO-18, BR-S-01)', () => {
+    expect(invoice.taxSummary?.length).toBeGreaterThan(0);
+    for (const line of invoice.lines) {
+      expect(
+        invoice.taxSummary.some(
+          (t: any) => t.vatCategoryCode === line.vatCategoryCode && t.vatRate === line.vatRate,
+        ),
+      ).toBe(true);
+    }
+  });
+
+  it('carries a buyerReference (BR-DE-15)', () => {
+    expect(invoice.buyerReference).toBeTruthy();
+  });
+
+  it('states totals consistent with its lines (BR-CO-13, BR-CO-15)', () => {
+    const net = invoice.lines.reduce((sum: number, l: any) => sum + l.lineTotal, 0);
+    const tax = invoice.taxSummary.reduce((sum: number, t: any) => sum + t.taxAmount, 0);
+    expect(invoice.totalNetAmount).toBe(net);
+    expect(invoice.totalTaxAmount).toBe(tax);
+    expect(invoice.totalGrossAmount).toBe(net + tax);
+  });
+});
