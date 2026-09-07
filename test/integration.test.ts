@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Beliq } from '@beliq/sdk';
+import app from '../src/app';
 
 // Live smoke against the real beliq API. Uses the same SDK calls src/api.ts
 // makes. Skipped unless BELIQ_API_KEY is set, so CI without the secret stays
@@ -7,33 +8,14 @@ import { Beliq } from '@beliq/sdk';
 
 const API_KEY = process.env.BELIQ_API_KEY;
 
-const INVOICE = {
-  number: 'INV-SMOKE-1',
-  issueDate: '2026-01-31',
-  dueDate: '2026-03-02',
-  currencyCode: 'EUR',
-  seller: {
-    name: 'Your Company GmbH',
-    address: { line1: 'Main St 1', city: 'Berlin', postalCode: '10115', countryCode: 'DE' },
-    taxId: 'DE123456789',
-    // BT-34 / BT-49. XRechnung rejects a party it cannot address (400), and
-    // `taxId` is not one of the rungs it reads — only `vatId` is.
-    email: 'billing@yourcompany.example',
-  },
-  buyer: {
-    name: 'Customer SARL',
-    address: { line1: 'Rue 2', city: 'Paris', postalCode: '75001', countryCode: 'FR' },
-    email: 'ap@customer.example',
-  },
-  lines: [
-    { description: 'Widget', quantity: 2, unitPrice: 10, lineTotal: 20, vatRate: 19, vatCategoryCode: 'S' },
-  ],
-  taxSummary: [{ categoryCode: 'S', rate: 19, taxableAmount: 20, taxAmount: 3.8 }],
-  paymentTerms: 'Net 30',
-  totalNetAmount: 20,
-  totalTaxAmount: 3.8,
-  totalGrossAmount: 23.8,
-};
+// EXAMPLE_INVOICE is the default_value Directus stores for a fresh operation,
+// so the smoke drives that exact object rather than a second copy that can
+// drift from it.
+const INVOICE = ((): Record<string, unknown> => {
+  const option = (app.options as any[]).find((o) => o.field === 'invoice');
+  const stored = option.schema.default_value;
+  return typeof stored === 'string' ? JSON.parse(stored) : stored;
+})();
 
 describe.skipIf(!API_KEY)('beliq live API', () => {
   const beliq = new Beliq({ apiKey: API_KEY ?? 'unused-when-skipped' });
