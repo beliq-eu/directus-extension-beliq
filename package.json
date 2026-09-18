@@ -67,8 +67,8 @@
     "@beliq/sdk": "^0.3.0"
   },
   "overrides": {
-    "joi": "^18.2.1",
-    "js-yaml": "^4.3.1",
+    "joi": "^18.2.5",
+    "js-yaml": "^4.3.2",
     "@unhead/vue": "^2.1.13",
     "@directus/composables": {
       "nanoid": "^5.1.16"
