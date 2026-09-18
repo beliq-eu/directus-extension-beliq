@@ -61,7 +61,7 @@
     "test": "vitest run --exclude test/integration.test.ts",
     "test:watch": "vitest",
     "test:integration": "vitest run test/integration.test.ts",
-    "scrub:check": "grep -rn $'\\u2014' src README.md examples && echo 'em-dash found' && exit 1 || echo 'no em-dash'"
+    "scrub:check": "bash scripts/scrub-check.sh"
   },
   "dependencies": {
     "@beliq/sdk": "^0.3.0"
