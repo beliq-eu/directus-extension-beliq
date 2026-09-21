@@ -135,3 +135,38 @@ below, since it needs an instance this pass does not stand up.
   verified shape locally, confirm rendering during the real-instance check.
 - Directus Cloud is out of reach by design (sandbox-only). Revisit if the
   sandbox ever gains a Files API + binary responses.
+
+## Dependency state, measured 2026-09-21
+
+Re-homed from `beliq-hq/STATUS-CONVENTION-ROADMAP.md`'s parked backlog in pass 8a-2. It was parked
+there because a lockfile refresh is a code change and a stamping pass does not own one. It belongs
+here.
+
+**Seven open Dependabot alerts, all development scope.** Measured against the API on 2026-09-21:
+
+| # | Severity | Package | Advisory |
+|---|---|---|---|
+| 44 | high | `svgo` | `GHSA-w27v-7q3p-w38r` |
+| 40 | high | `browserslist` | `GHSA-73wf-gq98-2v4g` |
+| 45 | medium | `svgo` | `GHSA-4vpr-x523-8j87` |
+| 48 | medium | `vitest` | `GHSA-82fw-gwwq-j7x9` |
+| 46 | medium | `@vitest/mocker` | `GHSA-82fw-gwwq-j7x9` |
+| 39 | medium | `decode-uri-component` | `GHSA-vcc3-ghjq-m6fr` |
+| 49 | medium | `baseline-browser-mapping` | `GHSA-w5vr-8v7q-w6rv` |
+
+Every one carries `scope: development` and sits in `package-lock.json`. The extension ships one
+runtime dependency, `@beliq/sdk`, so none of these reaches what a Directus instance loads out of
+`dist/`. That is the reason they are recorded here rather than treated as an incident, and it is a
+property of `package.json` rather than a judgement.
+
+**The parked entry recorded two; it is seven.** This repo had already cleared its alerts once (#4,
+2026-08-08), so these are new rather than untouched, and the count more than tripled in the six
+weeks since.
+
+**The gap is merging, not noticing.** Renovate has already proposed fixes and they are open:
+[#18](https://github.com/beliq-eu/directus-extension-beliq/pull/18) (`vitest` to v4, security,
+2026-09-13) and [#17](https://github.com/beliq-eu/directus-extension-beliq/pull/17) (`@unhead/vue`
+to v3, 2026-09-07), beside [#22](https://github.com/beliq-eu/directus-extension-beliq/pull/22) on
+the release workflow. `renovate.json` deliberately extends the plain `local>beliq-eu/.github`
+preset rather than the automerge variant, so nothing lands without a human. That is the design, and
+this queue is its cost.
