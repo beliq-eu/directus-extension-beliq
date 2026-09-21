@@ -78,6 +78,6 @@
     "@directus/extensions-sdk": "^18.0.2",
     "@types/node": "^22.10.0",
     "typescript": "^5.7.0",
-    "vitest": "^3.2.0"
+    "vitest": "^4.0.0"
   }
 }
