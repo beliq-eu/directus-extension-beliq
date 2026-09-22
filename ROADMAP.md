@@ -163,13 +163,16 @@ property of `package.json` rather than a judgement.
 2026-08-08), so these are new rather than untouched, and the count more than tripled in the six
 weeks since.
 
-**The gap is merging, not noticing.** Renovate has already proposed fixes and they are open:
+**The gap was merging, not noticing, and the queue cleared on 2026-09-21.** Renovate had already
+proposed the fixes and they were still open when this was measured:
 [#18](https://github.com/beliq-eu/directus-extension-beliq/pull/18) (`vitest` to v4, security,
-2026-09-13) and [#17](https://github.com/beliq-eu/directus-extension-beliq/pull/17) (`@unhead/vue`
-to v3, 2026-09-07), beside [#22](https://github.com/beliq-eu/directus-extension-beliq/pull/22) on
-the release workflow. `renovate.json` deliberately extends the plain `local>beliq-eu/.github`
+proposed 2026-09-13, merged 2026-09-21) and
+[#17](https://github.com/beliq-eu/directus-extension-beliq/pull/17) (`@unhead/vue` to v3, proposed
+2026-09-07, merged 2026-09-21), beside
+[#22](https://github.com/beliq-eu/directus-extension-beliq/pull/22) on the release workflow, merged
+2026-09-21. `renovate.json` deliberately extends the plain `local>beliq-eu/.github`
 preset rather than the automerge variant, so nothing lands without a human. That is the design, and
-this queue is its cost.
+this queue was its cost.
 
 **Both security PRs were red, and neither was broken by its dependency.** #18's `npm ci` failed at
 the install step with `Missing: nanoid@3.3.19 from lock file`: Renovate updated `package.json` and
