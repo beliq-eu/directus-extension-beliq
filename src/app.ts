@@ -138,7 +138,7 @@ export default defineOperationApp({
         width: 'half',
         interface: 'select-dropdown',
         options: { choices: OUTPUT_CHOICES },
-        note: 'XML returns the raw invoice. PDF returns a hybrid PDF/A-3 with the XML embedded on ZUGFeRD and Factur-X; XRechnung and Peppol BIS have no hybrid form, so they return a visualization with no XML inside it and their legal document stays the XML.',
+        note: 'XML returns the raw invoice. PDF returns a hybrid PDF/A-3 with the XML embedded on ZUGFeRD and Factur-X; XRechnung and Peppol BIS have no hybrid form, so they return a visualization with no XML inside it and their legal document stays the XML. NLCIUS always returns XML, whatever this field says.',
         ...onlyWhen({ operation: { _eq: 'generate' } }),
       },
       schema: { default_value: 'xml' },
