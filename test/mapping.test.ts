@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Beliq } from '@beliq/sdk';
+import app from '../src/app';
 import { resolveGenerateTarget, STANDARD_CHOICES } from '../src/lib/options';
 
 // These tests assert that each beliq operation, driven through the SDK exactly
@@ -224,5 +225,19 @@ describe('generate target resolution', () => {
 
   it('resolves a plain standard to itself with no forced profile', () => {
     expect(resolveGenerateTarget('xrechnung')).toEqual({ standard: 'xrechnung' });
+  });
+
+  // A preset that forces its output wins over the Output field, so that field
+  // has to say so, or the user's choice is dropped without a word.
+  it('names every standard that overrides Output in the Output note', () => {
+    const options = app.options as any[];
+    const standard = options.find((o) => o.field === 'standard');
+    const output = options.find((o) => o.field === 'output');
+    const forcing = (standard.meta.options.choices as { text: string; value: string }[]).flatMap((c) => {
+      const forced = resolveGenerateTarget(c.value).output;
+      return forced ? [`${c.text} always returns ${forced.toUpperCase()}`] : [];
+    });
+    expect(forcing).toEqual(['NLCIUS always returns XML']);
+    for (const sentence of forcing) expect(output.meta.note).toContain(sentence);
   });
 });
