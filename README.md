@@ -18,7 +18,14 @@ Backed by the published [`@beliq/sdk`](https://www.npmjs.com/package/@beliq/sdk)
 This is a standard (non-sandboxed) API extension, so it installs on self-hosted Directus:
 
 - **Marketplace** (self-hosted with `MARKETPLACE_TRUST=all`): search for `directus-extension-beliq`.
-- **Manual**: `npm install directus-extension-beliq` into your project, or drop the built `dist/` into your `extensions/` directory, then restart Directus.
+- **npm**: run `npm install directus-extension-beliq` in your Directus project directory, then restart Directus. Directus loads the extensions listed in that project's `package.json` dependencies.
+- **Extensions folder**: give the extension its own folder under `extensions/` (the `EXTENSIONS_PATH` setting) holding its `package.json` and `dist/`, then restart Directus. Directus reads each folder's `package.json` to find the entry points and skips a folder without one, so a bare `dist/` is never loaded:
+
+  ```bash
+  mkdir -p extensions/directus-extension-beliq
+  npm pack directus-extension-beliq
+  tar -xzf directus-extension-beliq-*.tgz --strip-components=1 -C extensions/directus-extension-beliq
+  ```
 
 It is not installable on Directus Cloud (which only runs sandboxed extensions; the sandbox has no access to the Files service or binary responses).
 
@@ -60,10 +67,10 @@ npm test           # unit tests (operation mapping)
 npm run scrub:check
 ```
 
-Live smoke test against the real API:
+Live smoke test against the real API, with a `blq_test_` sandbox key so its 8 documents come out of the sandbox allowance rather than a plan quota:
 
 ```bash
-BELIQ_API_KEY=beliq_xxx npm run test:integration
+BELIQ_API_KEY=blq_test_xxx npm run test:integration
 ```
 
 ## License

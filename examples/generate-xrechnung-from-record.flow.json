@@ -24,7 +24,6 @@
       "options": {
         "operation": "generate",
         "standard": "xrechnung",
-        "profile": "en16931",
         "output": "xml",
         "invoice": "{{ $trigger.payload.invoice }}"
       }

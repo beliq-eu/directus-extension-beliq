@@ -63,9 +63,6 @@
     "test:integration": "vitest run test/integration.test.ts",
     "scrub:check": "bash scripts/scrub-check.sh"
   },
-  "dependencies": {
-    "@beliq/sdk": "^0.4.0"
-  },
   "overrides": {
     "joi": "^18.2.5",
     "js-yaml": "^4.3.2",
@@ -75,6 +72,7 @@
     }
   },
   "devDependencies": {
+    "@beliq/sdk": "^0.4.0",
     "@directus/extensions-sdk": "^18.0.2",
     "@types/node": "^22.10.0",
     "typescript": "^5.7.0",

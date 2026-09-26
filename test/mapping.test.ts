@@ -240,4 +240,19 @@ describe('generate target resolution', () => {
     expect(forcing).toEqual(['NLCIUS always returns XML']);
     for (const sentence of forcing) expect(output.meta.note).toContain(sentence);
   });
+
+  // Generate hands XML back inline and never reaches delivery, so Delivery and
+  // Target Folder do nothing for it. A preset that forces XML lands there even
+  // when Output says PDF, which a visibility rule on Output cannot catch.
+  it('says in the Delivery note that XML skips it, naming every standard that forces XML', () => {
+    const options = app.options as any[];
+    const standard = options.find((o) => o.field === 'standard');
+    const delivery = options.find((o) => o.field === 'deliveryMode');
+    const forcingXml = (standard.meta.options.choices as { text: string; value: string }[])
+      .filter((c) => resolveGenerateTarget(c.value).output === 'xml')
+      .map((c) => `${c.text} always returns XML`);
+    expect(forcingXml).toEqual(['NLCIUS always returns XML']);
+    expect(delivery.meta.note).toContain('XML output returns the XML inline');
+    for (const sentence of forcingXml) expect(delivery.meta.note).toContain(sentence);
+  });
 });

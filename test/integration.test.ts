@@ -48,7 +48,9 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
       output: 'xml',
     });
     const result = await beliq.validate(generated.xml!, { format: 'auto' });
-    expect(result).toHaveProperty('valid');
+    // generate verifies its output before returning it, so the same bytes
+    // have to come back valid from the same pinned rules.
+    expect(result.valid, JSON.stringify(result.errors)).toBe(true);
   });
 
   it('parses a generated document', async () => {
@@ -58,7 +60,11 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
       output: 'xml',
     });
     const result = await beliq.parse(generated.xml!, { format: 'auto' });
-    expect(result).toBeTypeOf('object');
+    expect(result.invoice).toMatchObject({
+      number: INVOICE.number,
+      currencyCode: INVOICE.currencyCode,
+      totalGrossAmount: INVOICE.totalGrossAmount,
+    });
   });
 
   it('converts a document to UBL', async () => {

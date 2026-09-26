@@ -135,6 +135,34 @@ describe('generate handler', () => {
     const body = await generate({ standard: 'facturx' });
     expect(body).not.toHaveProperty('profile');
   });
+
+  // The Delivery note promises this. The context carries no Files service, so
+  // a handler that tried to save the XML would throw here.
+  it('returns XML inline whatever Delivery says, NLCIUS included', async () => {
+    for (const options of [
+      { standard: 'xrechnung', output: 'xml' },
+      { standard: 'nlcius', output: 'pdf' },
+    ]) {
+      const { restore } = recordGenerate();
+      try {
+        const result = await api.handler(
+          {
+            operation: 'generate',
+            apiKey: 'test-key',
+            invoice: INVOICE,
+            deliveryMode: 'directusFile',
+            folder: 'folder-id',
+            ...options,
+          },
+          { env: {} } as never,
+        );
+        expect(result, options.standard).toMatchObject({ xml: '<Invoice/>' });
+        expect(result, options.standard).not.toHaveProperty('fileId');
+      } finally {
+        restore();
+      }
+    }
+  });
 });
 
 describe('profile field visibility', () => {

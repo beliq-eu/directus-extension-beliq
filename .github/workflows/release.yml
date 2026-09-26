@@ -4,8 +4,8 @@ name: Release
 # NPM_TOKEN needed. Provenance attestations are generated automatically. Trigger
 # by pushing a version tag (e.g. v0.1.1) or running the workflow manually.
 #
-# Prerequisite: @beliq/sdk must already be on npm, since this package depends on
-# it and CI resolves it from the registry.
+# Prerequisite: @beliq/sdk must already be on npm. The build inlines it into
+# dist/api.js, so the version the lockfile pins is the one a release ships.
 #
 # One-time setup on npmjs.com: configure beliq-eu/directus-extension-beliq as a
 # Trusted Publisher for the package (package Settings -> Publishing access ->
@@ -71,11 +71,11 @@ jobs:
         # renovate: datasource=npm depName=npm
         run: npm install -g npm@12.0.2
 
-      # `npm install`, not `npm ci`: the release resolves @beliq/sdk fresh from
-      # the registry so a tagged build picks up the current SDK patch line. CI
-      # installs from the committed lockfile instead, and is the reproducible one.
+      # From the committed lockfile, the tree CI tested. The build inlines
+      # @beliq/sdk, so the lockfile at the tag records which SDK a release
+      # carries; a new SDK reaches a release through a lockfile bump.
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build

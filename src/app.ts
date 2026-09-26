@@ -270,7 +270,7 @@ export default defineOperationApp({
         width: 'half',
         interface: 'select-dropdown',
         options: { choices: DELIVERY_CHOICES },
-        note: 'How the generated file is returned.',
+        note: 'How a generated PDF or a converted document is returned. Generate with XML output returns the XML inline in the flow data and ignores this field and Target Folder. NLCIUS always returns XML.',
         conditions: [
           {
             name: 'show for byte-producing operations',
