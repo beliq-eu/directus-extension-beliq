@@ -71,7 +71,7 @@ jobs:
       # @latest, so a new npm release reaches a publish only through a reviewed bump.
       - name: Upgrade npm
         # renovate: datasource=npm depName=npm
-        run: npm install -g npm@12.0.2
+        run: npm install -g npm@12.2.0
 
       # From the committed lockfile, the tree CI tested. The build inlines
       # @beliq/sdk, so the lockfile at the tag records which SDK a release
