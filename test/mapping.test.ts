@@ -211,8 +211,24 @@ describe('generate target resolution', () => {
       'zugferd',
       'facturx',
       'peppol-bis',
+      'fatturapa',
+      'facturae',
+      'eslog',
+      'ksef',
       'nlcius',
     ]);
+  });
+
+  // A value with no label shows in the dropdown as its raw id. The SDK decides
+  // which standards are offered, so a new one arrives here without a label.
+  it('gives every generate target a label of its own', () => {
+    expect(STANDARD_CHOICES.filter((c) => c.text === c.value)).toEqual([]);
+  });
+
+  it('resolves each national standard to itself, leaving profile and output open', () => {
+    for (const standard of ['fatturapa', 'facturae', 'eslog', 'ksef']) {
+      expect(resolveGenerateTarget(standard)).toEqual({ standard });
+    }
   });
 
   it('resolves NLCIUS to peppol-bis + the netherlands-nlcius profile (XML)', () => {

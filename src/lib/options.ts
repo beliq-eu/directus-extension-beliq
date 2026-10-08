@@ -10,9 +10,10 @@ import {
   type Standard,
 } from '@beliq/sdk';
 
-// Dropdown value-spaces come straight from the SDK's LIVE_* lists, the publicly
-// offered subset of the beliq coverage SSOT. Provisional formats the API can
-// technically accept stay out of the UI. Labels here are cosmetic only.
+// Dropdown value-spaces come straight from the SDK's LIVE_* lists. Generate
+// offers all eight standards POST /v1/generate accepts, the four national XSD
+// ones included. GET /v1/rulesets carries the badge saying how deep each
+// format's check goes. Labels here are cosmetic only.
 const LABELS: Record<string, string> = {
   auto: 'Auto-detect',
   cii: 'CII',
@@ -21,6 +22,10 @@ const LABELS: Record<string, string> = {
   zugferd: 'ZUGFeRD',
   facturx: 'Factur-X',
   'peppol-bis': 'Peppol BIS',
+  fatturapa: 'FatturaPA (Italy)',
+  facturae: 'Facturae (Spain)',
+  eslog: 'e-SLOG (Slovenia)',
+  ksef: 'KSeF FA(3) (Poland)',
   basicwl: 'BASIC WL',
   en16931: 'EN 16931',
   extended: 'EXTENDED',
