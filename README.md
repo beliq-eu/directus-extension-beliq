@@ -4,7 +4,7 @@ A [Directus](https://directus.io) Flow **operation** for [beliq](https://beliq.e
 
 One operation, four use cases:
 
-- **Generate** an invoice from a structured EN 16931 object, as XML or a hybrid PDF/A-3.
+- **Generate** an invoice from a structured EN 16931 object, as XML or PDF.
 - **Validate** a document against the pinned rule set and return the compliance verdict.
 - **Parse** a document into a structured invoice.
 - **Convert** a document between formats (CII, UBL, ZUGFeRD, Factur-X, XRechnung, Peppol BIS).
@@ -38,6 +38,21 @@ Add the **beliq** operation to a Flow and pick an operation.
   - **Save to Directus File** (default) returns `{ fileId, filename, contentType, sizeBytes, ... }`.
   - **Base64** returns `{ base64, ... }`.
 - **Generate** as XML returns `{ xml, contentType, ... }`; **Validate** and **Parse** return their JSON result.
+
+## Format coverage
+
+The Standard dropdown of **Generate** carries every standard `POST /v1/generate` accepts. `GET https://api.beliq.eu/v1/rulesets` publishes each format with a badge saying how deep its check goes:
+
+- **Authority-checked** (the authority's own rules): XRechnung, ZUGFeRD, Factur-X, Peppol BIS and NLCIUS.
+- **Schema-checked** (structure only, no business rules): FatturaPA, Facturae, e-SLOG and KSeF FA(3). Their authority publishes no machine-readable business rules.
+
+One profile sits below its standard's badge: Romania RO_CIUS, a profile of Peppol BIS, is **Community-checked** (real business rules from an independent pack, not the authority's own). The [Romania reference](https://docs.beliq.eu/format-reference/romania/) says why.
+
+KSeF FA(3) generation covers ordinary VAT invoices in PLN between Polish parties, at VAT rates 23, 22, 8, 7 and 5. The [Poland KSeF FA(3) reference](https://docs.beliq.eu/format-reference/poland/) states the full scope.
+
+beliq generates and validates the document. Transmission (Peppol, PDP, KSeF, SDI), archiving, and tax-authority reporting are separate and remain your access point's job: beliq does not operate KSeF submission, and this operation never sends or files an invoice.
+
+Only ZUGFeRD and Factur-X have a hybrid PDF, a PDF/A-3 with the XML embedded. For the other standards, PDF output is a visualization with no XML inside it, and the legal document is the XML. NLCIUS always returns XML.
 
 ## Examples
 
