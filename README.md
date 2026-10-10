@@ -78,6 +78,8 @@ It prints the flow's admin URL when done. Open it, set your API key (or the `BEL
 npm install
 npm run build      # @directus/extensions-sdk -> dist/app.js + dist/api.js
 npm run validate   # SDK conformance check
+npm run typecheck  # type-check src/ and test/, emits nothing
+npm run lint       # ESLint over src/, test/, examples/ and the root config files
 npm test           # unit tests (operation mapping)
 npm run scrub:check
 ```

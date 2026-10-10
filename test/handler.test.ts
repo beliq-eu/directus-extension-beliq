@@ -12,7 +12,7 @@ interface Recorded {
   body: unknown;
 }
 
-function recordGenerate(response?: { bytes: Uint8Array; contentType: string }) {
+function recordGenerate(response?: { bytes: Uint8Array<ArrayBuffer>; contentType: string }) {
   const calls: Recorded[] = [];
   const original = globalThis.fetch;
   const body = response?.bytes ?? new TextEncoder().encode('<Invoice/>');

@@ -30,6 +30,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Typecheck (src and tests)
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
       - name: Validate extension
         run: npm run validate
 

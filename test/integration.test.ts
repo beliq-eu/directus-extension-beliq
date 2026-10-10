@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Beliq } from '@beliq/sdk';
-import app from '../src/app';
+import { sampleInvoice } from './app-options';
 
 // Live smoke against the real beliq API. Uses the same SDK calls src/api.ts
 // makes. Skipped unless BELIQ_API_KEY is set, so CI without the secret stays
@@ -8,14 +8,7 @@ import app from '../src/app';
 
 const API_KEY = process.env.BELIQ_API_KEY;
 
-// EXAMPLE_INVOICE is the default_value Directus stores for a fresh operation,
-// so the smoke drives that exact object rather than a second copy that can
-// drift from it.
-const INVOICE = ((): Record<string, unknown> => {
-  const option = (app.options as any[]).find((o) => o.field === 'invoice');
-  const stored = option.schema.default_value;
-  return typeof stored === 'string' ? JSON.parse(stored) : stored;
-})();
+const INVOICE = sampleInvoice();
 
 describe.skipIf(!API_KEY)('beliq live API', () => {
   const beliq = new Beliq({ apiKey: API_KEY ?? 'unused-when-skipped' });
@@ -23,7 +16,7 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
   it('generates an XRechnung XML invoice', async () => {
     const result = await beliq.generate({
       standard: 'xrechnung',
-      invoice: INVOICE as any,
+      invoice: INVOICE,
       output: 'xml',
     });
     expect(result.contentType).toContain('xml');
@@ -33,7 +26,7 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
   it('generates a ZUGFeRD hybrid PDF', async () => {
     const result = await beliq.generate({
       standard: 'zugferd',
-      invoice: INVOICE as any,
+      invoice: INVOICE,
       output: 'pdf',
       profile: 'en16931',
     });
@@ -44,7 +37,7 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
   it('validates a generated document', async () => {
     const generated = await beliq.generate({
       standard: 'xrechnung',
-      invoice: INVOICE as any,
+      invoice: INVOICE,
       output: 'xml',
     });
     const result = await beliq.validate(generated.xml!, { format: 'auto' });
@@ -56,7 +49,7 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
   it('parses a generated document', async () => {
     const generated = await beliq.generate({
       standard: 'xrechnung',
-      invoice: INVOICE as any,
+      invoice: INVOICE,
       output: 'xml',
     });
     const result = await beliq.parse(generated.xml!, { format: 'auto' });
@@ -70,7 +63,7 @@ describe.skipIf(!API_KEY)('beliq live API', () => {
   it('converts a document to UBL', async () => {
     const generated = await beliq.generate({
       standard: 'xrechnung',
-      invoice: INVOICE as any,
+      invoice: INVOICE,
       output: 'xml',
     });
     const result = await beliq.convert(generated.xml!, { targetFormat: 'ubl' });

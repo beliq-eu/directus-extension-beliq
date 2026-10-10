@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { Beliq } from '@beliq/sdk';
-import app from '../src/app';
+import { Beliq, type Invoice } from '@beliq/sdk';
+import { choicesOf, optionField } from './app-options';
 import { resolveGenerateTarget, STANDARD_CHOICES } from '../src/lib/options';
 
 // These tests assert that each beliq operation, driven through the SDK exactly
@@ -78,7 +78,7 @@ describe('beliq operation mapping', () => {
 
     const result = await beliq.generate({
       standard: 'xrechnung',
-      invoice: { number: 'INV-1' } as any,
+      invoice: { number: 'INV-1' } as Invoice,
       output: 'xml',
     });
 
@@ -111,7 +111,7 @@ describe('beliq operation mapping', () => {
 
     const result = await beliq.generate({
       standard: 'facturx',
-      invoice: { number: 'INV-2' } as any,
+      invoice: { number: 'INV-2' } as Invoice,
       output: 'pdf',
       profile: 'en16931',
       pdfTemplateId: 'tpl_abc',
@@ -246,29 +246,25 @@ describe('generate target resolution', () => {
   // A preset that forces its output wins over the Output field, so that field
   // has to say so, or the user's choice is dropped without a word.
   it('names every standard that overrides Output in the Output note', () => {
-    const options = app.options as any[];
-    const standard = options.find((o) => o.field === 'standard');
-    const output = options.find((o) => o.field === 'output');
-    const forcing = (standard.meta.options.choices as { text: string; value: string }[]).flatMap((c) => {
+    const output = optionField('output');
+    const forcing = choicesOf('standard').flatMap((c) => {
       const forced = resolveGenerateTarget(c.value).output;
       return forced ? [`${c.text} always returns ${forced.toUpperCase()}`] : [];
     });
     expect(forcing).toEqual(['NLCIUS always returns XML']);
-    for (const sentence of forcing) expect(output.meta.note).toContain(sentence);
+    for (const sentence of forcing) expect(output.meta?.note).toContain(sentence);
   });
 
   // Generate hands XML back inline and never reaches delivery, so Delivery and
   // Target Folder do nothing for it. A preset that forces XML lands there even
   // when Output says PDF, which a visibility rule on Output cannot catch.
   it('says in the Delivery note that XML skips it, naming every standard that forces XML', () => {
-    const options = app.options as any[];
-    const standard = options.find((o) => o.field === 'standard');
-    const delivery = options.find((o) => o.field === 'deliveryMode');
-    const forcingXml = (standard.meta.options.choices as { text: string; value: string }[])
+    const delivery = optionField('deliveryMode');
+    const forcingXml = choicesOf('standard')
       .filter((c) => resolveGenerateTarget(c.value).output === 'xml')
       .map((c) => `${c.text} always returns XML`);
     expect(forcingXml).toEqual(['NLCIUS always returns XML']);
-    expect(delivery.meta.note).toContain('XML output returns the XML inline');
-    for (const sentence of forcingXml) expect(delivery.meta.note).toContain(sentence);
+    expect(delivery.meta?.note).toContain('XML output returns the XML inline');
+    for (const sentence of forcingXml) expect(delivery.meta?.note).toContain(sentence);
   });
 });
