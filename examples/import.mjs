@@ -50,11 +50,7 @@ async function api(method, path, body) {
 
 // Drop the human-only "$note" keys before sending anything to Directus.
 function strip(obj) {
-  const out = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (k !== '$note') out[k] = v;
-  }
-  return out;
+  return Object.fromEntries(Object.entries(obj).filter(([k]) => k !== '$note'));
 }
 
 const raw = JSON.parse(await readFile(filePath, 'utf8'));

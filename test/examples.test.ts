@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import app from '../src/app';
+import { choicesOf, optionFields } from './app-options';
 import { usableProfile } from '../src/lib/options';
 
 // examples/ holds flow definitions a user loads as they are, so an option value
@@ -13,16 +13,20 @@ const EXAMPLES = new URL('../examples/', import.meta.url);
 const operations = readdirSync(EXAMPLES)
   .filter((file) => file.endsWith('.flow.json'))
   .flatMap((file) => {
-    const flow = JSON.parse(readFileSync(new URL(file, EXAMPLES), 'utf8'));
-    return (flow.operations as any[])
+    const flow = JSON.parse(readFileSync(new URL(file, EXAMPLES), 'utf8')) as {
+      operations: { type: string; options: Record<string, string> }[];
+    };
+    return flow.operations
       .filter((op) => op.type === 'beliq')
-      .map((op) => ({ file, options: op.options as Record<string, string> }));
+      .map((op) => ({ file, options: op.options }));
   });
 
-const dropdownValues = new Map<string, string[]>(
-  (app.options as any[])
-    .filter((o) => o.meta?.interface === 'select-dropdown' && o.meta.options.choices.length > 0)
-    .map((o) => [o.field, (o.meta.options.choices as { value: string }[]).map((c) => c.value)]),
+const dropdownValues = new Map(
+  optionFields().flatMap((o): [string, string[]][] => {
+    if (!o.field || o.meta?.interface !== 'select-dropdown') return [];
+    const values = choicesOf(o.field).map((c) => c.value);
+    return values.length > 0 ? [[o.field, values]] : [];
+  }),
 );
 
 describe('example flows', () => {

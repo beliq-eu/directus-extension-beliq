@@ -58,6 +58,8 @@
     "dev": "directus-extension dev",
     "link": "directus-extension link",
     "validate": "directus-extension validate",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "test": "vitest run --exclude test/integration.test.ts",
     "test:watch": "vitest",
     "test:integration": "vitest run test/integration.test.ts",
@@ -75,8 +77,13 @@
   "devDependencies": {
     "@beliq/sdk": "^0.4.5",
     "@directus/extensions-sdk": "^18.0.2",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^22.10.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-security": "^4.2.0",
+    "globals": "^17.13.0",
     "typescript": "^5.7.0",
+    "typescript-eslint": "^8.71.1",
     "vitest": "^4.0.0"
   }
 }

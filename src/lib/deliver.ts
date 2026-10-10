@@ -1,13 +1,13 @@
 import { Readable } from 'node:stream';
+import type { defineOperationApi } from '@directus/extensions-sdk';
 
-/** Minimal shape of the Directus operation handler context we rely on. */
-export interface DirectusContext {
-  services: any;
-  getSchema: () => Promise<any>;
-  database: any;
-  accountability: any;
-  env: Record<string, any>;
-}
+type OperationContext = Parameters<Parameters<typeof defineOperationApi>[0]['handler']>[1];
+
+/** The part of the Directus operation handler context we rely on. */
+export type DirectusContext = Pick<
+  OperationContext,
+  'services' | 'getSchema' | 'database' | 'accountability' | 'env'
+>;
 
 export interface FilePayload {
   buffer: Buffer;
@@ -18,12 +18,12 @@ export interface FilePayload {
 
 /**
  * Import a generated file into Directus storage via FilesService and return the
- * new file's primary key (UUID). Uses the first configured storage location.
+ * new file's primary key. Uses the first configured storage location.
  */
 export async function saveToDirectusFile(
   context: DirectusContext,
   file: FilePayload,
-): Promise<string> {
+): Promise<string | number> {
   const { services, getSchema, database, accountability, env } = context;
   const { FilesService } = services;
 

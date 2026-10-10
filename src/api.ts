@@ -8,28 +8,28 @@ import type {
   ValidateFormat,
 } from '@beliq/sdk';
 import { asJsonObject, createClient, mapError } from './lib/beliq.js';
-import { saveToDirectusFile } from './lib/deliver.js';
+import { saveToDirectusFile, type DirectusContext } from './lib/deliver.js';
 import { resolveGenerateTarget, usableProfile } from './lib/options.js';
 
-type Options = Record<string, any>;
+type Options = Record<string, unknown>;
 
-const FILE_EXTENSIONS: Record<string, string> = {
-  'application/pdf': 'pdf',
-  'application/xml': 'xml',
-  'text/xml': 'xml',
-};
+const FILE_EXTENSIONS = new Map([
+  ['application/pdf', 'pdf'],
+  ['application/xml', 'xml'],
+  ['text/xml', 'xml'],
+]);
 
 /** Pick a filename for a delivered document from its content type. */
 function defaultFilename(prefix: string, contentType: string): string {
   const base = contentType.split(';')[0].trim().toLowerCase();
-  const ext = FILE_EXTENSIONS[base] ?? 'bin';
+  const ext = FILE_EXTENSIONS.get(base) ?? 'bin';
   return `${prefix}.${ext}`;
 }
 
 export default defineOperationApi<Options>({
   id: 'beliq',
   handler: async (options, context) => {
-    const { services, getSchema, database, accountability, env } = context as any;
+    const { services, getSchema, database, accountability, env } = context;
 
     const apiKey = (options.apiKey as string) || (env.BELIQ_API_KEY as string) || '';
     if (!apiKey) {
@@ -92,7 +92,7 @@ export default defineOperationApi<Options>({
             bytes: result.bytes,
             contentType: result.contentType,
             filename: defaultFilename('invoice', result.contentType),
-            folder: options.folder || null,
+            folder: (options.folder as string) || null,
             meta: { ...result.meta },
           },
         );
@@ -111,7 +111,7 @@ export default defineOperationApi<Options>({
             bytes: result.bytes,
             contentType: result.contentType,
             filename: defaultFilename('converted', result.contentType),
-            folder: options.folder || null,
+            folder: (options.folder as string) || null,
             meta: {
               lostElements: result.meta.lostElements,
               lostElementsCount: result.meta.lostElementsCount,
@@ -137,13 +137,7 @@ interface DeliverPayload {
 
 /** Return delivered bytes as a saved Directus file or inline base64. */
 async function deliver(
-  context: {
-    services: any;
-    getSchema: () => Promise<any>;
-    database: any;
-    accountability: any;
-    env: Record<string, any>;
-  },
+  context: DirectusContext,
   deliveryMode: string,
   payload: DeliverPayload,
 ): Promise<Record<string, unknown>> {

@@ -14,7 +14,7 @@ import {
 // offers all eight standards POST /v1/generate accepts, the four national XSD
 // ones included. GET /v1/rulesets carries the badge saying how deep each
 // format's check goes. Labels here are cosmetic only.
-const LABELS: Record<string, string> = {
+const LABELS = new Map(Object.entries({
   auto: 'Auto-detect',
   cii: 'CII',
   ubl: 'UBL',
@@ -30,7 +30,7 @@ const LABELS: Record<string, string> = {
   en16931: 'EN 16931',
   extended: 'EXTENDED',
   'extended-ctc-fr': 'EXTENDED CTC FR',
-};
+}));
 
 export interface Choice {
   text: string;
@@ -39,7 +39,7 @@ export interface Choice {
 
 /** Turn a LIVE_* string list into Directus select-dropdown choices. */
 export function choices(values: readonly string[]): Choice[] {
-  return values.map((value) => ({ text: LABELS[value] ?? value, value }));
+  return values.map((value) => ({ text: LABELS.get(value) ?? value, value }));
 }
 
 // Curated profile presets (e.g. NLCIUS = Peppol BIS + the netherlands-nlcius
