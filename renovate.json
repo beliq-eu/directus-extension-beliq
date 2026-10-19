@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>beliq-eu/.github:automerge"]
+  "extends": ["local>beliq-eu/.github:automerge"],
+  "packageRules": [
+    {
+      "description": "The js-yaml entry under `overrides` is a security floor: it lifts the dev dependency tree above GHSA-2883-xcg3-v3hh, fixed in 4.3.2. Both consumers are on the 4.x line: @directus/utils (through @directus/extensions-sdk) pins 4.3.2 exactly and loads it with a default import, and cosmiconfig asks for ^4.1.0. js-yaml 5 has no default export, so an override at ^5 breaks `npm run build` with \"does not provide an export named 'default'\". Lift once @directus/utils accepts js-yaml 5.",
+      "matchPackageNames": ["js-yaml"],
+      "allowedVersions": "^4"
+    }
+  ]
 }
