@@ -26,6 +26,7 @@ const LABELS = new Map(Object.entries({
   facturae: 'Facturae (Spain)',
   eslog: 'e-SLOG (Slovenia)',
   ksef: 'KSeF FA(3) (Poland)',
+  poland_ksef_fa3: 'KSeF FA(3) (Poland)',
   basicwl: 'BASIC WL',
   en16931: 'EN 16931',
   extended: 'EXTENDED',

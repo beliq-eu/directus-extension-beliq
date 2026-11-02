@@ -38,6 +38,7 @@ Add the **beliq** operation to a Flow and pick an operation.
   - **Save to Directus File** (default) returns `{ fileId, filename, contentType, sizeBytes, ... }`.
   - **Base64** returns `{ base64, ... }`.
 - **Generate** as XML returns `{ xml, contentType, ... }`; **Validate** and **Parse** return their JSON result.
+- **Convert** also returns `lostElementsCount`, how many source elements the engine recorded as having no target equivalent, and `lostElements`, one object per loss with the `path`, `value`, `reason`, `severity` and `acceptableLoss` that [the LostElement schema](https://docs.beliq.eu/api-reference/convert/#lostelement-schema) describes. A loss the engine does not detect is not counted. When the list would pass the API's 6 KB header cap, it holds one `{ "truncated": true }` entry instead of the losses, and `lostElementsCount` stays the exact count.
 
 ## Format coverage
 

@@ -165,6 +165,53 @@ describe('generate handler', () => {
   });
 });
 
+async function convert(lostElements: unknown[], lostElementsCount: number) {
+  const original = globalThis.fetch;
+  globalThis.fetch = (async () =>
+    new Response(new TextEncoder().encode('<Invoice/>'), {
+      status: 200,
+      headers: {
+        'content-type': 'application/xml',
+        'x-lost-elements-count': String(lostElementsCount),
+        'x-lost-elements': JSON.stringify(lostElements),
+      },
+    })) as typeof fetch;
+  try {
+    return (await api.handler(
+      { operation: 'convert', apiKey: 'test-key', deliveryMode: 'base64', convertDocument: '<Invoice/>', targetFormat: 'ubl' },
+      { env: {} } as never,
+    )) as Record<string, unknown>;
+  } finally {
+    globalThis.fetch = original;
+  }
+}
+
+describe('convert handler', () => {
+  it('returns each lost element as the object the API sent', async () => {
+    // From the worked example at https://docs.beliq.eu/api-reference/convert/#lostelement-schema
+    const lost = {
+      path: '/Invoice/{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}AccountingSupplierParty/{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}Party/cbc:EndpointID',
+      value: null,
+      reason: 'Peppol endpoint stripped (target is not peppol-bis)',
+      severity: 'info',
+      acceptableLoss: true,
+    };
+    const result = await convert([lost], 1);
+    expect(result.lostElementsCount).toBe(1);
+    expect(result.lostElements).toEqual([lost]);
+  });
+
+  it('returns the one truncation entry of a list past the header cap, with the exact count', async () => {
+    const truncated = {
+      truncated: true,
+      reason: 'Audit list exceeded 6144 bytes (412 entries); see X-Lost-Elements-Count for the exact count.',
+    };
+    const result = await convert([truncated], 412);
+    expect(result.lostElementsCount).toBe(412);
+    expect(result.lostElements).toEqual([truncated]);
+  });
+});
+
 describe('profile field visibility', () => {
   it('offers the field only where a choice exists', () => {
     // xrechnung has one legal profile and nlcius is a preset that pins one, so
