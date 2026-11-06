@@ -290,7 +290,14 @@ export default defineOperationApp({
         width: 'half',
         interface: 'system-folder',
         note: 'Optional folder for the created file.',
-        ...onlyWhen({ deliveryMode: { _eq: 'directusFile' } }),
+        // Delivery keeps its value while Validate or Parse hide it, so the
+        // operation has to be part of the rule too.
+        ...onlyWhen({
+          _and: [
+            { operation: { _in: ['generate', 'convert'] } },
+            { deliveryMode: { _eq: 'directusFile' } },
+          ],
+        }),
       },
     },
 

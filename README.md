@@ -11,6 +11,8 @@ One operation, four use cases:
 
 By default the bytes an operation produces (a generated PDF, a converted document) are saved **straight into Directus Files** and the operation returns the new file's `fileId`, so a following operation can attach it to a record. You can also return them as **base64**. Generate as XML and validate/parse return their JSON straight into the flow data chain.
 
+The save runs with the permissions of whoever triggered the flow, such as the user behind a webhook call or the user whose change an event flow reacts to. A scheduled flow has no user and saves without a permission check. Outside the admin role, that user's policy needs **create** on `directus_files`. Without it the operation fails with Directus's "You don't have permission to access collection "directus_files"" error, after beliq has generated or converted the document, so that call still counts against your quota.
+
 Backed by the published [`@beliq/sdk`](https://www.npmjs.com/package/@beliq/sdk).
 
 ## Installation
