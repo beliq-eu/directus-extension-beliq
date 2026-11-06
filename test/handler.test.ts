@@ -165,6 +165,25 @@ describe('generate handler', () => {
   });
 });
 
+// What the user typed into Invoice Data when it is not an invoice object.
+const UNUSABLE_INVOICE_DATA: [string, unknown][] = [
+  ['absent', undefined],
+  ['empty', '   '],
+  ['unparseable', '{"number": "INV-1",'],
+  ['an array', '[{"number": "INV-1"}]'],
+  ['an empty object', '{}'],
+];
+
+describe('Invoice Data the handler cannot use', () => {
+  // Today's behaviour, pinned so the fix has to change it: the handler sends
+  // `{}` in place of what was typed, and the user gets the API's schema 400
+  // about missing fields instead of a word about Invoice Data.
+  it.each(UNUSABLE_INVOICE_DATA)('sends {} when Invoice Data is %s', async (_label, invoice) => {
+    const body = await generate({ standard: 'xrechnung', invoice });
+    expect(body.invoice).toEqual({});
+  });
+});
+
 async function convert(lostElements: unknown[], lostElementsCount: number) {
   const original = globalThis.fetch;
   globalThis.fetch = (async () =>
