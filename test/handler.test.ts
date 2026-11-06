@@ -49,7 +49,7 @@ async function generate(options: Record<string, unknown>) {
 
 /**
  * Drive the handler down its PDF path. `deliveryMode: 'base64'` keeps the
- * result out of the Directus Files service, which needs a running Directus.
+ * result out of the Directus Files service, which test/deliver.test.ts covers.
  */
 async function generatePdf(options: Record<string, unknown>) {
   const { calls, restore } = recordGenerate({
@@ -175,7 +175,7 @@ const UNUSABLE_INVOICE_DATA: [string, unknown][] = [
 ];
 
 describe('Invoice Data the handler cannot use', () => {
-  // Until 0.2.6 the handler sent `{}` in place of what was typed, and the user
+  // Through 0.2.6 the handler sent `{}` in place of what was typed, and the user
   // got the API's schema 400 about missing fields instead of a word about
   // Invoice Data.
   it.each(UNUSABLE_INVOICE_DATA)(

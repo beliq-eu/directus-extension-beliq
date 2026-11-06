@@ -83,6 +83,7 @@ describe('delivery to Directus Files', () => {
       accountability: directus.accountability,
     });
     const options = upload.serviceOptions as Record<string, unknown>;
+    expect(options.schema).toBe(directus.schema);
     expect(options.knex).toBe(directus.database);
     expect(options.accountability).toBe(directus.accountability);
     expect(upload.bytes.equals(Buffer.from(PDF_BYTES))).toBe(true);
@@ -122,12 +123,14 @@ describe('delivery to Directus Files', () => {
     expect(directus.uploads[0].data.folder).toBe('b7f1c2d4-folder');
   });
 
-  // Directus reads STORAGE_LOCATIONS as one comma-separated string, and its own
-  // uploadOne falls back on the first entry, the same one taken here.
-  it.each([
+  // Directus's env loader turns a value with a comma into an array, split on
+  // the comma and not trimmed, and leaves a single name a string
+  // (packages/env/src/utils/guess-type.ts, lib/cast.ts). Its own uploadOne
+  // takes the first entry, the same one taken here.
+  it.each<[string | string[], string]>([
     ['s3', 's3'],
-    ['s3,local', 's3'],
-    [' gcs , local', 'gcs'],
+    [['s3', 'local'], 's3'],
+    [[' gcs ', ' local'], 'gcs'],
   ])('saves to the first location of STORAGE_LOCATIONS=%j', async (locations, storage) => {
     restore = answer(PDF_BYTES, { 'content-type': 'application/pdf' });
     const directus = directusContext({ STORAGE_LOCATIONS: locations });

@@ -13,9 +13,9 @@ describe('asJsonObject', () => {
 
   it.each([
     ['absent', undefined, 'is empty. It must be a JSON object.'],
-    ['null', null, 'is empty. It must be a JSON object.'],
+    ['null', null, 'is JSON null. It must be a JSON object.'],
     ['blank text', ' \n ', 'is empty. It must be a JSON object.'],
-    ['the text null', 'null', 'is empty. It must be a JSON object.'],
+    ['the text null', 'null', 'is JSON null. It must be a JSON object.'],
     ['an array', '[{"number": "INV-1"}]', 'is a JSON array. It must be a JSON object.'],
     ['a parsed array', [{ number: 'INV-1' }], 'is a JSON array. It must be a JSON object.'],
     ['a number', '42', 'is a JSON number. It must be a JSON object.'],

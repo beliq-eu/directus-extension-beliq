@@ -24,8 +24,11 @@ export function mapError(error: unknown): Error {
  */
 export function asJsonObject(value: unknown, field: string): Record<string, unknown> {
   const candidate = typeof value === 'string' ? parseJson(value, field) : value;
-  if (candidate === undefined || candidate === null) {
+  if (candidate === undefined) {
     throw new Error(`beliq: ${field} is empty. It must be a JSON object.`);
+  }
+  if (candidate === null) {
+    throw new Error(`beliq: ${field} is JSON null. It must be a JSON object.`);
   }
   if (Array.isArray(candidate)) {
     throw new Error(`beliq: ${field} is a JSON array. It must be a JSON object.`);
