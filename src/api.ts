@@ -60,7 +60,7 @@ export default defineOperationApi<Options>({
         const output = target.output ?? ((options.output as 'xml' | 'pdf') || 'xml');
         const result = await beliq.generate({
           standard: target.standard,
-          invoice: (asJsonObject(options.invoice) ?? {}) as Invoice,
+          invoice: asJsonObject(options.invoice, 'Invoice Data') as Invoice,
           output,
           // A profile the standard does not accept is a 422; an operation saved
           // before the field was filtered can still carry one.

@@ -17,21 +17,38 @@ export function mapError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }
 
-/** Coerce an option value into a non-empty plain object, or undefined. */
-export function asJsonObject(value: unknown): Record<string, unknown> | undefined {
-  let candidate = value;
-  if (typeof candidate === 'string') {
-    const trimmed = candidate.trim();
-    if (trimmed === '') return undefined;
-    try {
-      candidate = JSON.parse(trimmed);
-    } catch {
-      return undefined;
-    }
+/**
+ * Read a JSON option that has to hold a non-empty object. Directus hands it
+ * over parsed or as the text that was typed. Anything else throws an error
+ * that names the field, so no stand-in object reaches the API.
+ */
+export function asJsonObject(value: unknown, field: string): Record<string, unknown> {
+  const candidate = typeof value === 'string' ? parseJson(value, field) : value;
+  if (candidate === undefined) {
+    throw new Error(`beliq: ${field} is empty. It must be a JSON object.`);
   }
-  if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) {
-    const obj = candidate as Record<string, unknown>;
-    return Object.keys(obj).length > 0 ? obj : undefined;
+  if (candidate === null) {
+    throw new Error(`beliq: ${field} is JSON null. It must be a JSON object.`);
   }
-  return undefined;
+  if (Array.isArray(candidate)) {
+    throw new Error(`beliq: ${field} is a JSON array. It must be a JSON object.`);
+  }
+  if (typeof candidate !== 'object') {
+    throw new Error(`beliq: ${field} is a JSON ${typeof candidate}. It must be a JSON object.`);
+  }
+  if (Object.keys(candidate).length === 0) {
+    throw new Error(`beliq: ${field} is an empty JSON object.`);
+  }
+  return candidate as Record<string, unknown>;
+}
+
+function parseJson(text: string, field: string): unknown {
+  const trimmed = text.trim();
+  if (trimmed === '') return undefined;
+  try {
+    return JSON.parse(trimmed);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`beliq: ${field} is not valid JSON (${reason}).`, { cause: error });
+  }
 }
