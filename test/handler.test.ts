@@ -175,12 +175,36 @@ const UNUSABLE_INVOICE_DATA: [string, unknown][] = [
 ];
 
 describe('Invoice Data the handler cannot use', () => {
-  // Today's behaviour, pinned so the fix has to change it: the handler sends
-  // `{}` in place of what was typed, and the user gets the API's schema 400
-  // about missing fields instead of a word about Invoice Data.
-  it.each(UNUSABLE_INVOICE_DATA)('sends {} when Invoice Data is %s', async (_label, invoice) => {
-    const body = await generate({ standard: 'xrechnung', invoice });
-    expect(body.invoice).toEqual({});
+  // Until 0.2.6 the handler sent `{}` in place of what was typed, and the user
+  // got the API's schema 400 about missing fields instead of a word about
+  // Invoice Data.
+  it.each(UNUSABLE_INVOICE_DATA)(
+    'fails on Invoice Data that is %s, naming the field, before any request',
+    async (_label, invoice) => {
+      const { calls, restore } = recordGenerate();
+      try {
+        await expect(
+          api.handler(
+            { operation: 'generate', apiKey: 'test-key', standard: 'xrechnung', output: 'xml', invoice },
+            { env: {} } as never,
+          ),
+        ).rejects.toThrow(/^beliq: Invoice Data /);
+      } finally {
+        restore();
+      }
+      expect(calls).toHaveLength(0);
+    },
+  );
+
+  it('carries the parse error of Invoice Data that is not JSON', async () => {
+    await expect(generate({ standard: 'xrechnung', invoice: '{"number": "INV-1",' })).rejects.toThrow(
+      /^beliq: Invoice Data is not valid JSON \(.+\)\.$/,
+    );
+  });
+
+  it('sends an Invoice Data object Directus has already parsed as it stands', async () => {
+    const body = await generate({ standard: 'xrechnung', invoice: { number: 'INV-7' } });
+    expect(body.invoice).toEqual({ number: 'INV-7' });
   });
 });
 
