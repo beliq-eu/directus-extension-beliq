@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Beliq, type Invoice } from '@beliq/sdk';
 import { choicesOf, optionField } from './app-options';
-import { resolveGenerateTarget, STANDARD_CHOICES } from '../src/lib/options';
+import { resolveGenerateTarget, STANDARD_CHOICES, VALIDATE_FORMAT_CHOICES } from '../src/lib/options';
 
 // These tests assert that each beliq operation, driven through the SDK exactly
 // as src/api.ts drives it, maps its options onto the right wire request:
@@ -67,6 +67,24 @@ function parseUrl(url: string) {
   const u = new URL(url);
   return { path: u.pathname, query: Object.fromEntries(u.searchParams.entries()) };
 }
+
+// The worked example of https://docs.beliq.eu/api-reference/convert/#lostelement-schema
+const LOST_ELEMENTS = [
+  {
+    path: '/Invoice/{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}AccountingSupplierParty/{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}Party/cbc:EndpointID',
+    value: null,
+    reason: 'Peppol endpoint stripped (target is not peppol-bis)',
+    severity: 'info',
+    acceptableLoss: true,
+  },
+  {
+    path: '/Invoice/{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}AccountingCustomerParty/{urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2}Party/cbc:EndpointID',
+    value: null,
+    reason: 'Peppol endpoint stripped (target is not peppol-bis)',
+    severity: 'info',
+    acceptableLoss: true,
+  },
+];
 
 describe('beliq operation mapping', () => {
   it('generate (xml) posts a JSON body to /v1/generate and decodes the XML', async () => {
@@ -167,7 +185,7 @@ describe('beliq operation mapping', () => {
       headers: {
         'content-type': 'application/pdf',
         'x-lost-elements-count': '2',
-        'x-lost-elements': JSON.stringify(['DeliveryDate', 'BuyerReference']),
+        'x-lost-elements': JSON.stringify(LOST_ELEMENTS),
       },
       bytes: zip,
     });
@@ -185,7 +203,7 @@ describe('beliq operation mapping', () => {
     expect(query.targetProfile).toBe('en16931');
     expect(calls[0].body).toBe('<Invoice/>');
     expect(result.meta.lostElementsCount).toBe(2);
-    expect(result.meta.lostElements).toEqual(['DeliveryDate', 'BuyerReference']);
+    expect(result.meta.lostElements).toEqual(LOST_ELEMENTS);
     expect(Array.from(result.bytes)).toEqual([1, 2, 3, 4]);
   });
 
@@ -223,6 +241,10 @@ describe('generate target resolution', () => {
   // which standards are offered, so a new one arrives here without a label.
   it('gives every generate target a label of its own', () => {
     expect(STANDARD_CHOICES.filter((c) => c.text === c.value)).toEqual([]);
+  });
+
+  it('gives every validate format a label of its own', () => {
+    expect(VALIDATE_FORMAT_CHOICES.filter((c) => c.text === c.value)).toEqual([]);
   });
 
   it('resolves each national standard to itself, leaving profile and output open', () => {
