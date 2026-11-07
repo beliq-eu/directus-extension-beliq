@@ -17,7 +17,7 @@ Backed by the published [`@beliq/sdk`](https://www.npmjs.com/package/@beliq/sdk)
 
 ## Installation
 
-This is a standard (non-sandboxed) API extension, so it installs on self-hosted Directus:
+This is a standard (non-sandboxed) API extension, so it installs on self-hosted Directus 11 and 12, the range `directus:extension.host` in `package.json` declares:
 
 - **Marketplace** (self-hosted with `MARKETPLACE_TRUST=all`): search for `directus-extension-beliq`.
 - **npm**: run `npm install directus-extension-beliq` in your Directus project directory, then restart Directus. Directus loads the extensions listed in that project's `package.json` dependencies.
