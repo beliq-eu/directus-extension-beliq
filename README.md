@@ -84,7 +84,6 @@ npm run validate   # SDK conformance check
 npm run typecheck  # type-check src/ and test/, emits nothing
 npm run lint       # ESLint over src/, test/, examples/ and the root config files
 npm test           # unit tests (operation mapping)
-npm run scrub:check
 ```
 
 Live smoke test against the real API, with a `blq_test_` sandbox key so its 8 documents come out of the sandbox allowance rather than a plan quota:

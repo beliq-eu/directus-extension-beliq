@@ -62,8 +62,7 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run --exclude test/integration.test.ts",
     "test:watch": "vitest",
-    "test:integration": "vitest run test/integration.test.ts",
-    "scrub:check": "bash scripts/scrub-check.sh"
+    "test:integration": "vitest run test/integration.test.ts"
   },
   "overrides": {
     "joi": "^18.2.6",
