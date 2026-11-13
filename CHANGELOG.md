@@ -14,6 +14,6 @@ is on npm without a tag. Dates are the npm publish date, in UTC.
 
 - Breaking: Convert's `lostElements` output holds one object per lost element,
   with `path`, `value`, `reason`, `severity` and `acceptableLoss`. Before, each
-  entry was the string `[object Object]`. When the list would pass the API's
-  6 KB header cap, it holds one `{ "truncated": true }` entry instead.
+  entry was the string `[object Object]`. When the list would pass the 6 KB
+  header cap, it holds one `{ "truncated": true }` entry instead.
   `lostElementsCount` is unchanged.
