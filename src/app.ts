@@ -70,7 +70,7 @@ export default defineOperationApp({
   id: 'beliq',
   name: 'beliq',
   icon: 'receipt_long',
-  description: 'Generate, validate, parse, and convert EU-compliant e-invoices with beliq.',
+  description: 'Validate, generate, convert and parse EU e-invoices with beliq.',
   overview: ({ operation, standard, deliveryMode }) => [
     { label: 'Operation', text: String(operation ?? 'generate') },
     { label: 'Standard', text: String(standard ?? '-') },

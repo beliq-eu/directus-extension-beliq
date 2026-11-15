@@ -1,5 +1,5 @@
 {
-  "$note": "Manual flow: validate a pasted or referenced e-invoice XML against beliq's authority-pinned rules and return the verdict into the flow data chain. Replace the sample XML with {{ $trigger.payload.xml }} or a value read from an earlier step. Load it with: DIRECTUS_URL=... DIRECTUS_TOKEN=... node examples/import.mjs validate-uploaded-file.flow.json. Add your key as the BELIQ_API_KEY env var (or set the operation's API Key).",
+  "$note": "Manual flow: validate a pasted or referenced e-invoice XML against the rule packs and schemas of its format, each pinned by version and hash, and return the verdict into the flow data chain. Replace the sample XML with {{ $trigger.payload.xml }} or a value read from an earlier step. Load it with: DIRECTUS_URL=... DIRECTUS_TOKEN=... node examples/import.mjs validate-uploaded-file.flow.json. Add your key as the BELIQ_API_KEY env var (or set the operation's API Key).",
   "flow": {
     "name": "beliq - Validate invoice XML",
     "icon": "fact_check",
