@@ -1,11 +1,12 @@
 import { Beliq, BeliqApiError, retryClass } from '@beliq/sdk';
 
 /**
- * Directus documents no time limit for a custom operation, so the client does
- * not retry until a real instance shows how long a flow may wait: a retry
- * budget of 0 turns the SDK's retries off, and an attempt ends after
- * TIMEOUT_MS. An outage then fails the operation at once, and its error says
- * when to try again.
+ * A retry budget of 0 turns the SDK's retries off, and an attempt ends after
+ * TIMEOUT_MS. In a blocking (filter) flow the save holds a database
+ * connection while the operation waits: on SQLite the only one, on PostgreSQL
+ * one of the pool's 10 by default. Retrying would hold it for the whole
+ * budget, so an outage fails the operation at once and its error says when to
+ * try again. The README's "When beliq is unavailable" has the readings.
  */
 export const RETRY_BUDGET_MS = 0;
 export const TIMEOUT_MS = 25_000;
