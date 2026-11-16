@@ -1,11 +1,11 @@
 # directus-extension-beliq
 
-A [Directus](https://directus.io) Flow **operation** for [beliq](https://beliq.eu), a REST API that generates, validates, parses, and converts EU-compliant e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS) against authority-pinned, drift-checked rules.
+A [Directus](https://directus.io) Flow **operation**: validate, generate, convert and parse EU e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS) with the [beliq](https://beliq.eu) API from Directus. [Format coverage](#format-coverage) lists the further formats Generate carries and how deep each check goes.
 
 One operation, four use cases:
 
 - **Generate** an invoice from a structured EN 16931 object, as XML or PDF.
-- **Validate** a document against the pinned rule set and return the compliance verdict.
+- **Validate** a document against the rule packs and schemas of its format and return the verdict.
 - **Parse** a document into a structured invoice.
 - **Convert** a document between formats (CII, UBL, ZUGFeRD, Factur-X, XRechnung, Peppol BIS).
 
