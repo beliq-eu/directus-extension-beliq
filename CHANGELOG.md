@@ -5,6 +5,15 @@ breaking change; the rest of its changes are in the git history between the
 version tags (https://github.com/beliq-eu/directus-extension-beliq/tags). 0.1.0
 is on npm without a tag. Dates are the npm publish date, in UTC.
 
+## 0.3.3 - 2026-11-16
+
+- The README says that beliq covers three steps of an e-invoice: generate,
+  validate, and deliver (in development). The operation runs the first two,
+  parses and converts, and never sends or files an invoice. Until delivery
+  through beliq is available, transmission (Peppol, plateforme agréée, SDI)
+  and tax-authority reporting stay with your access point. Archiving stays
+  with you, and beliq does not operate KSeF submission. No behaviour changed.
+
 ## 0.3.2 - 2026-11-16
 
 - The package description, the README, the operation's description in the
