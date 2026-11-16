@@ -5,6 +5,14 @@ breaking change; the rest of its changes are in the git history between the
 version tags (https://github.com/beliq-eu/directus-extension-beliq/tags). 0.1.0
 is on npm without a tag. Dates are the npm publish date, in UTC.
 
+## 0.3.2 - 2026-11-16
+
+- The package description, the README, the operation's description in the
+  Directus UI and the two example flows no longer call the result compliant or
+  the rules authority-pinned. Validate checks against the rule packs and
+  schemas of the document's format, each pinned by version and hash. No
+  behaviour changed.
+
 ## 0.3.1 - 2026-11-07
 
 - Declares Directus 12: the extension's host range is `^11.0.0 || ^12.0.0`,
