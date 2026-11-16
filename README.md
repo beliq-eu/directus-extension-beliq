@@ -1,6 +1,6 @@
 # directus-extension-beliq
 
-A [Directus](https://directus.io) Flow **operation**: validate, generate, convert and parse EU e-invoices with the [beliq](https://beliq.eu) API from Directus, in the formats listed under [Format coverage](#format-coverage).
+A [Directus](https://directus.io) Flow **operation**: validate, generate, convert and parse EU e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS) with the [beliq](https://beliq.eu) API from Directus. [Format coverage](#format-coverage) lists the further formats Generate carries and how deep each check goes.
 
 One operation, four use cases:
 
