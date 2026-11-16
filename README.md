@@ -53,7 +53,7 @@ One profile sits below its standard's badge: Romania RO_CIUS, a profile of Peppo
 
 KSeF FA(3) generation covers ordinary VAT invoices in PLN between Polish parties, at VAT rates 23, 22, 8, 7 and 5. The [Poland KSeF FA(3) reference](https://docs.beliq.eu/format-reference/poland/) states the full scope.
 
-beliq generates and validates the document. Transmission (Peppol, PDP, KSeF, SDI), archiving, and tax-authority reporting are separate and remain your access point's job: beliq does not operate KSeF submission, and this operation never sends or files an invoice.
+beliq covers three steps of an e-invoice: generate, validate, and deliver (in development). This operation runs the first two and also parses and converts documents; it never sends or files an invoice. Until delivery through beliq is available, transmission (Peppol, plateforme agréée, SDI) and tax-authority reporting stay with your access point. Archiving stays with you, and beliq does not operate KSeF submission.
 
 Only ZUGFeRD and Factur-X have a hybrid PDF, a PDF/A-3 with the XML embedded. For the other standards, PDF output is a visualization with no XML inside it, and the legal document is the XML. NLCIUS always returns XML.
 
