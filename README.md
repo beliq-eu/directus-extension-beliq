@@ -42,6 +42,19 @@ Add the **beliq** operation to a Flow and pick an operation.
 - **Generate** as XML returns `{ xml, contentType, ... }`; **Validate** and **Parse** return their JSON result.
 - **Convert** also returns `lostElementsCount`, how many source elements the engine recorded as having no target equivalent, and `lostElements`, one object per loss with the `path`, `value`, `reason`, `severity` and `acceptableLoss` that [the LostElement schema](https://docs.beliq.eu/api-reference/convert/#lostelement-schema) describes. A loss the engine does not detect is not counted. When the list would pass the API's 6 KB header cap, it holds one `{ "truncated": true }` entry instead of the losses, and `lostElementsCount` stays the exact count.
 
+## When beliq is unavailable
+
+The operation does not retry. When beliq answers that it is unavailable, or cannot be reached, the operation fails at once, and its error says when to try again: `Try again in 30 seconds` when beliq sent a wait, or `beliq did not say when; try again later`. An attempt that gets no answer ends after 25 seconds.
+
+It does not retry because of how Directus runs a blocking flow (an Event Hook of type Filter, such as one on `items.create`). The save waits for the operation, and Directus holds a database connection for the whole wait. On Directus 12.6.1 we measured:
+
+- On SQLite, that connection is the only one. While one save waits, every other request that reads the database waits too, and fails after 60 seconds with `Knex: Timeout acquiring a connection`.
+- On PostgreSQL, the pool holds 10 connections by default (`DB_POOL__MAX`). Ten saves waiting at once have the same effect.
+
+Because the operation gives up after 25 seconds, the other requests wait at most that long and then go through. With retries on, a save waited minutes, and the other requests failed.
+
+When the operation fails in a blocking flow, Directus refuses the save with the error, and nothing is written. In a Webhook flow, the caller still gets `200` with an empty body, and the error shows only in the flow's logs.
+
 ## Format coverage
 
 The Standard dropdown of **Generate** carries every standard `POST /v1/generate` accepts. `GET https://api.beliq.eu/v1/rulesets` publishes each format with a badge saying how deep its check goes:
