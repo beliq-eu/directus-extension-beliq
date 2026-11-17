@@ -7,6 +7,11 @@ is on npm without a tag. Dates are the npm publish date, in UTC.
 
 ## 0.4.0 - 2026-11-17
 
+- Breaking: a request to beliq that takes longer than 25 seconds now fails
+  with a timeout. In 0.3.3 an attempt could take up to 90 seconds, so a
+  large document that beliq answered in, say, 40 seconds worked then. A flow
+  that rode out a short outage on 0.3.3's retries now fails at once and has
+  to run again.
 - The operation does not retry when beliq is unavailable. A 503
   `DATABASE_UNAVAILABLE`, or an API that cannot be reached, fails the
   operation at once, and an attempt that gets no answer ends after 25
