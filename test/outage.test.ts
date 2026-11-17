@@ -56,12 +56,12 @@ async function validate(): Promise<{ message: string; ms: number }> {
 describe('an operation during an outage fails within one attempt and says when to try again', () => {
   it('names the server wait of a 503 DATABASE_UNAVAILABLE, after one request', async () => {
     handler = (_req, res) => {
-      res.writeHead(503, { 'Content-Type': 'application/json', 'Retry-After': '30' });
+      res.writeHead(503, { 'Content-Type': 'application/json', 'Retry-After': '15' });
       res.end(JSON.stringify({ success: false, error: { code: 'DATABASE_UNAVAILABLE', message: 'database unavailable' } }));
     };
     const result = await validate();
     expect(result.message).toBe(
-      'beliq is unavailable for now: database unavailable. Try again in 30 seconds (DATABASE_UNAVAILABLE)',
+      'beliq is unavailable for now: database unavailable. Try again in 15 seconds (DATABASE_UNAVAILABLE)',
     );
     expect(requests).toBe(1);
   });
