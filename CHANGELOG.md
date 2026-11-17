@@ -5,6 +5,23 @@ breaking change; the rest of its changes are in the git history between the
 version tags (https://github.com/beliq-eu/directus-extension-beliq/tags). 0.1.0
 is on npm without a tag. Dates are the npm publish date, in UTC.
 
+## 0.4.0 - 2026-11-17
+
+- The operation does not retry when beliq is unavailable. A 503
+  `DATABASE_UNAVAILABLE`, or an API that cannot be reached, fails the
+  operation at once, and an attempt that gets no answer ends after 25
+  seconds. In 0.3.3 an outage was retried 3 times, about 2 minutes at
+  `Retry-After: 30`, with attempts of up to 90 seconds. A blocking flow holds
+  a database connection while the operation waits, so a wait of minutes makes
+  other requests to the instance fail. The README's "When beliq is unavailable"
+  gives the readings from Directus 12.6.1 on SQLite and PostgreSQL.
+- An outage error starts with `beliq is unavailable for now` and says when to
+  try again: `Try again in 30 seconds` when beliq sent a wait, or
+  `beliq did not say when; try again later`. Any other error with a
+  `Retry-After`, such as a 429 `RATE_LIMITED`, names the wait too.
+- The extension bundles `@beliq/sdk` 0.7, up from 0.6.
+- The package includes this changelog.
+
 ## 0.3.3 - 2026-11-16
 
 - The README says that beliq covers three steps of an e-invoice: generate,
