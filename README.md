@@ -44,7 +44,7 @@ Add the **beliq** operation to a Flow and pick an operation.
 
 ## When beliq is unavailable
 
-The operation does not retry. When beliq answers that it is unavailable, or cannot be reached, the operation fails at once, and its error says when to try again: `Try again in 30 seconds` when beliq sent a wait, or `beliq did not say when; try again later`. An attempt that gets no answer ends after 25 seconds.
+The operation does not retry. When beliq answers that it is unavailable, or cannot be reached, the operation fails at once, and its error says when to try again: `Try again in 15 seconds` when beliq sent a wait, or `beliq did not say when; try again later`. An attempt that gets no answer ends after 25 seconds.
 
 It does not retry because of how Directus runs a blocking flow (an Event Hook of type Filter, such as one on `items.create`). The save waits for the operation, and Directus holds a database connection for the whole wait. On Directus 12.6.1 we measured:
 
