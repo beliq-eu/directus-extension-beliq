@@ -3,6 +3,16 @@
   "extends": ["local>beliq-eu/.github:automerge"],
   "packageRules": [
     {
+      "description": "Node is capped below 27 in the workflows. CI runs Node 26, and the `node-version` matrix also tests the engines floor in package.json. Node 27 is not an LTS release, so the next move is to 28, in every beliq repository at once rather than in this one alone. The github-actions manager reads setup-node's `node-version:` input as depName `node` with packageName `actions/node-versions`, and `matchPackageNames` matches the packageName, so `actions/node-versions` is the name that holds the `node-version:` lines.",
+      "matchPackageNames": ["node", "actions/node-versions"],
+      "allowedVersions": "<27.0.0"
+    },
+    {
+      "description": "`@types/node` tracks this repo's engines floor, `node >=22` in package.json, so a major past 22 would type development against Node APIs the package does not promise to its users. Raise it together with engines.node. The floor is a per-repo fact, so this stays out of the shared preset.",
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "<23.0.0"
+    },
+    {
       "description": "The js-yaml entry under `overrides` is a security floor: it lifts the dev dependency tree above GHSA-2883-xcg3-v3hh, fixed in 4.3.2. Both consumers are on the 4.x line: @directus/utils (through @directus/extensions-sdk) pins 4.3.2 exactly and loads it with a default import, and cosmiconfig asks for ^4.1.0. js-yaml 5 has no default export, so an override at ^5 breaks `npm run build` with \"does not provide an export named 'default'\". Lift once @directus/utils accepts js-yaml 5.",
       "matchPackageNames": ["js-yaml"],
       "allowedVersions": "^4"
