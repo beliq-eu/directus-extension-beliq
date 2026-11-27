@@ -1,6 +1,6 @@
 # directus-extension-beliq
 
-A [Directus](https://directus.io) Flow **operation**: validate, generate, convert and parse EU e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS) with the [beliq](https://beliq.eu) API from Directus. [Format coverage](#format-coverage) lists the further formats Generate carries and how deep each check goes.
+A [Directus](https://directus.io) Flow **operation**: generate, validate, parse and convert EU e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS) with the [beliq](https://beliq.eu) API from Directus. [Format coverage](#format-coverage) lists the further formats Generate carries and how deep each check goes.
 
 One operation, four use cases:
 
@@ -66,7 +66,7 @@ One profile sits below its standard's badge: Romania RO_CIUS, a profile of Peppo
 
 KSeF FA(3) generation covers ordinary VAT invoices in PLN between Polish parties, at VAT rates 23, 22, 8, 7 and 5. The [Poland KSeF FA(3) reference](https://docs.beliq.eu/format-reference/poland/) states the full scope.
 
-beliq covers three steps of an e-invoice: generate, validate, and deliver (in development). This operation runs the first two and also parses and converts documents; it never sends or files an invoice. Until delivery through beliq is available, transmission (Peppol, plateforme agréée, SDI) and tax-authority reporting stay with your access point. Archiving stays with you, and beliq does not operate KSeF submission.
+beliq does five things with an e-invoice: generate, validate, parse, convert and deliver (in development). This operation runs the first four; it never sends or files an invoice. Until delivery through beliq is available, transmission (Peppol, plateforme agréée, SDI) and tax-authority reporting stay with your access point. Archiving stays with you, and beliq does not operate KSeF submission.
 
 Only ZUGFeRD and Factur-X have a hybrid PDF, a PDF/A-3 with the XML embedded. For the other standards, PDF output is a visualization with no XML inside it, and the legal document is the XML. NLCIUS always returns XML.
 

@@ -1,7 +1,7 @@
 {
   "name": "directus-extension-beliq",
   "version": "0.4.0",
-  "description": "Directus Flow operation for beliq: validate, generate, convert and parse EU e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS). Can save generated PDFs and converted documents straight into Directus Files.",
+  "description": "Directus Flow operation for beliq: generate, validate, parse and convert EU e-invoices (XRechnung, ZUGFeRD, Factur-X, Peppol BIS). Can save generated PDFs and converted documents straight into Directus Files.",
   "keywords": [
     "directus",
     "directus-extension",
